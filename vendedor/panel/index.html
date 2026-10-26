@@ -50,7 +50,7 @@ function vLogin(){return`<div class="login"><div class="box"><div class="brand" 
 const P=()=>DB.pedidos.filter(p=>p.biz===BIZ);
 function convs(){const m=DB.mensajes.filter(x=>x.biz===BIZ);const ids=[...new Set(m.map(x=>x.de==='negocio'?x.para:x.de))];
  return ids.map(id=>{const ms=m.filter(x=>x.de===id||x.para===id);const nom=(ms.find(x=>x.nom)||{}).nom||'Cliente';return{id,nom,ult:ms[ms.length-1],nl:ms.filter(x=>x.para==='negocio'&&!x.leido).length}}).sort((a,b)=>b.ult.t-a.ult.t)}
-function rank(){const n=N();return n.vendedores.map(v=>{const ps=P().filter(p=>p.ref===v.cod&&p.estado==='cobrado');const ventas=ps.reduce((s,p)=>s+p.total,0);return{...v,cant:ps.length,ventas,com:ventas*n.comision/100}}).sort((a,b)=>b.ventas-a.ventas)}
+function rank(){const n=N();return n.vendedores.map(v=>{const ps=P().filter(p=>p.ref===v.cod&&p.estado==='cobrado');const ventas=ps.reduce((s,p)=>s+p.total,0);const caja=P().filter(p=>p.ref===v.cod&&/efectivo/i.test(p.pago)&&p.estado!=='rechazado'&&p.pagoEstado==='verificado'&&!p.liquidado).reduce((s,p)=>s+p.total,0);return{...v,cant:ps.length,ventas,com:ventas*n.comision/100,caja}}).sort((a,b)=>b.ventas-a.ventas)}
 const tiendaURL=()=>BASE+'tienda/?n='+BIZ;
 function vInicio(){const ps=P(),hoy=new Date().toDateString();const cob=ps.filter(p=>p.estado==='cobrado');
  const hoyV=cob.filter(p=>new Date(p.t).toDateString()===hoy).reduce((s,p)=>s+p.total,0),tot=cob.reduce((s,p)=>s+p.total,0);
@@ -71,7 +71,9 @@ function vPago(p){if(!p.pagoEstado)return'';
  const cls=p.pagoEstado==='verificado'?'ok':p.pagoEstado==='rechazado'?'no':'';
  const lbl=p.pagoEstado==='verificado'?(ef?'efectivo confirmado':'pago verificado'):p.pagoEstado;
  return`<div class="vp ${cls}"><div class="rw"><span>${ef?'💵 Efectivo · entregado al promotor':'💳 '+esc(p.pago)+' · Referencia'}</span><span class="pill ${cls?'':'nuevo'}">${lbl}</span></div>
- <b class="refn">${esc(ef?(v?v.n+' · '+v.cod:p.refPago):p.refPago)}</b>${p.pagoEstado==='por verificar'?`<p class="mut" style="margin:6px 0">${ef?`Confirma con ${esc(v?v.n:'el promotor')} que recibió ${money(p.total)} en efectivo.`:`Revisa en tu banco que llegó ${money(p.total)} con esta referencia.`}</p>`:''}</div>`}
+ <b class="refn">${esc(ef?(v?v.n+' · '+v.cod:p.refPago):p.refPago)}</b>${ef?`<p style="margin-top:4px">${p.recibo?`🧾 Cobro ${esc(p.recibo)} registrado por el promotor${p.directa?' (venta casa por casa)':''}`:'⚠️ Sin código de cobro'}${p.liquidado?' · 💰 ya te entregó el efectivo':''}</p>`:''}${p.pagoEstado==='por verificar'?`<p class="mut" style="margin:6px 0">${ef?`El promotor registró que recibió ${money(p.total)}. Ese efectivo queda a su cargo hasta que te lo entregue.`:`Revisa en tu banco que llegó ${money(p.total)} con esta referencia.`}</p>`:''}</div>`}
+function liquidar(cod){const v=N().vendedores.find(x=>x.cod===cod);if(!confirm('¿Confirmas que '+v.n+' te entregó todo su efectivo?'))return;
+ P().filter(p=>p.ref===cod&&/efectivo/i.test(p.pago)&&p.pagoEstado==='verificado'&&!p.liquidado).forEach(p=>{p.liquidado=Date.now()});save();toast('Efectivo de '+v.n+' recibido');render()}
 function verif(cod,okp){const p=P().find(x=>x.cod===cod),ef=/efectivo/i.test(p.pago);
  if(okp){p.pagoEstado='verificado';p.estado='confirmado';save();enviar('negocio',p.cliente.id,`✅ ${ef?'Confirmamos tu pago en efectivo con el promotor':'Verificamos tu pago (Ref. '+p.refPago+')'}. Tu pedido ${cod} está aceptado y en preparación.`,cod)}
  else{if(!confirm('¿Rechazar este pedido? Se le avisará al cliente.'))return;p.pagoEstado='rechazado';p.estado='rechazado';save();
@@ -86,6 +88,7 @@ function vProductos(){return`<h2>Productos</h2>`+N().productos.map(p=>`<div clas
  `<div class="box"><b>Nuevo producto</b><br><br><label>Nombre</label><input id="pN"><label>Descripción corta</label><input id="pD"><label>Precio (USD)</label><input id="pP" type="number" step="0.01" inputmode="decimal">
  <label>Foto</label><input id="pF" type="file" accept="image/*"><button class="btn full" onclick="addP()">Agregar producto</button></div>`}
 function vVendedores(){return`<h2>Vendedores</h2>`+rank().map((v,i)=>`<div class="box"><div class="rw"><b>${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${esc(v.n)} <span class="mut">${v.cod}</span></b><b class="gtxt">${money(v.com)}</b></div>
+ ${v.caja>0?`<div class="vp" style="margin:8px 0"><div class="rw"><span>💵 Efectivo por entregarte</span><b class="gtxt" style="font-size:18px">${money(v.caja)}</b></div><p class="mut" style="margin:4px 0">Neto después de su comisión: ${money(v.caja*(1-N().comision/100))}</p><button class="btn sm" onclick="liquidar('${v.cod}')">Recibí el efectivo de ${esc(v.n)}</button></div>`:''}
  <p class="mut" style="margin:6px 0">${v.cant} pedidos cobrados · ventas ${money(v.ventas)} · comisión ${N().comision}%</p>
  <input readonly value="${tiendaURL()}&ref=${v.cod}" onclick="this.select();navigator.clipboard&&navigator.clipboard.writeText(this.value);toast('Enlace copiado')"></div>`).join('')+
  `<div class="box"><b>Agregar vendedor</b><br><br><input id="vN" placeholder="Nombre"><input id="vC" placeholder="Código (ej. PEDRO3)"><input id="vP" placeholder="PIN de 4 dígitos" inputmode="numeric" maxlength="4"><button class="btn full" onclick="addV()">Agregar</button>
