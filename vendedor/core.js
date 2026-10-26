@@ -15,6 +15,12 @@ const bc='BroadcastChannel' in window?new BroadcastChannel('va_demo2'):null;
 function save(){localStorage.setItem(VA_KEY,JSON.stringify(DB));bc&&bc.postMessage(1)}
 const QS=new URLSearchParams(location.search);
 let BIZ=QS.get('n')&&DB.negocios[QS.get('n')]?QS.get('n'):(localStorage.getItem('va_biz')||'dulces');
+const CUENTAS_DEMO=()=>[
+ {id:'zelle',nombre:'Zelle',activo:true,campos:{Correo:'pagos@ejemplo.com',Titular:'Nombre del titular'}},
+ {id:'pago_movil',nombre:'Pago Móvil',activo:true,campos:{Banco:'0102 Banco de Venezuela',Teléfono:'0414-0000000',Cédula:'V-00.000.000',Titular:'Nombre del titular'}},
+ {id:'binance',nombre:'Binance',activo:true,campos:{'Pay ID':'000000000',Correo:'binance@ejemplo.com'}},
+ {id:'efectivo',nombre:'Efectivo',activo:true,campos:{}}];
+Object.values(DB.negocios).forEach(n=>{if(!n.cuentas)n.cuentas=CUENTAS_DEMO()});
 if(!DB.negocios[BIZ])BIZ='dulces';localStorage.setItem('va_biz',BIZ);
 const N=()=>DB.negocios[BIZ];
 const $=s=>document.querySelector(s);
