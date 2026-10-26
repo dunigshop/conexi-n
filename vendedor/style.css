@@ -1,5 +1,5 @@
 :root{--bg:#07070a;--bg2:#0f0f14;--card:#14141b;--line:#2a2a33;--txt:#fbf8ef;--mut:#a9a6b3;
---g1:#fff3b0;--g2:#ffd23f;--g3:#f5a300;--g4:#c07a00;--gold:linear-gradient(135deg,#fff3b0 0%,#ffd23f 30%,#f5a300 60%,#ffe680 100%);
+--g1:#fff3b0;--g2:#ffd23f;--g3:#f5a300;--g4:#c07a00;--gold:linear-gradient(110deg,#f5a300 0%,#ffd23f 25%,#fff3b0 50%,#ffd23f 75%,#f5a300 100%);
 --ok:#2ee59d;--bad:#ff4d6d;--r:18px}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -107,3 +107,4 @@ label{font-size:12px;color:var(--mut);font-weight:500}
 .vp{margin-top:10px;padding:12px;border-radius:14px;background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.35);font-size:13px}
 .vp.ok{background:rgba(46,229,157,.08);border-color:rgba(46,229,157,.35)}.vp.no{background:rgba(255,77,109,.08);border-color:rgba(255,77,109,.35)}
 .vp b.refn{font-family:ui-monospace,monospace;font-size:17px;letter-spacing:1px}
+.pill.rechazado{background:rgba(255,77,109,.12);color:var(--bad)}
