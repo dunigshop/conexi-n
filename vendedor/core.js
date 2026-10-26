@@ -20,7 +20,8 @@ const CUENTAS_DEMO=()=>[
  {id:'pago_movil',nombre:'Pago Móvil',activo:true,campos:{Banco:'0102 Banco de Venezuela',Teléfono:'0414-0000000',Cédula:'V-00.000.000',Titular:'Nombre del titular'}},
  {id:'binance',nombre:'Binance',activo:true,campos:{'Pay ID':'000000000',Correo:'binance@ejemplo.com'}},
  {id:'efectivo',nombre:'Efectivo',activo:true,campos:{}}];
-Object.values(DB.negocios).forEach(n=>{if(!n.cuentas)n.cuentas=CUENTAS_DEMO()});
+Object.values(DB.negocios).forEach(n=>{if(!n.cuentas)n.cuentas=CUENTAS_DEMO()});if(!DB.recibos)DB.recibos=[];
+const RECIBO_MIN=30;
 if(!DB.negocios[BIZ])BIZ='dulces';localStorage.setItem('va_biz',BIZ);
 const N=()=>DB.negocios[BIZ];
 const $=s=>document.querySelector(s);
