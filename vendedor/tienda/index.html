@@ -80,14 +80,14 @@ function abrirCarrito(){const it=items(),n=N(),tot=it.reduce((s,i)=>s+i.p*i.q,0)
   <label>Método de pago</label><select id="cP" onchange="camposPago()"><option value="">Seleccione…</option>${n.cuentas.filter(c=>c.activo).map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('')}</select>
   <div id="pagoInfo" class="pinfo hide"></div>
   <div id="pagoRef" class="hide"><label>Número de referencia</label><input id="cR" inputmode="numeric" placeholder="Código de referencia del pago"></div>
-  <div id="pagoObs" class="hide"><label>Observación del pago en efectivo</label><input id="cO" placeholder="Ej. Pago en efectivo en dólares"></div>
+  <div id="pagoObs" class="hide"><label>Código del promotor que te vendió</label><input id="cO" placeholder="Ej. ANA01" value="${esc(localStorage.getItem('va_ref_'+BIZ)||'')}" style="text-transform:uppercase"></div>
   <button class="btn full" onclick="pedir()">Confirmar pedido · ${money(tot)}</button>`
   :'<p class="mut" style="text-align:center;padding:40px 0">Tu carrito está vacío 🛍️</p>';
  $('#dChat').classList.remove('open');$('#dCart').classList.add('open')}
 function camposPago(){const id=$('#cP').value,c=N().cuentas.find(x=>x.id===id);
  $('#pagoInfo').classList.toggle('hide',!c);$('#pagoRef').classList.toggle('hide',!c||id==='efectivo');$('#pagoObs').classList.toggle('hide',id!=='efectivo');
  if(!c)return;const f=Object.entries(c.campos||{}).filter(([k,v])=>v);
- $('#pagoInfo').innerHTML=`<b class="gtxt">Datos para ${esc(c.nombre)}</b>`+(id==='efectivo'?'<p>💵 Pagas al recibir tu pedido. Déjanos una nota abajo.</p>':
+ $('#pagoInfo').innerHTML=`<b class="gtxt">Datos para ${esc(c.nombre)}</b>`+(id==='efectivo'?'<p>💵 El efectivo se le entrega al promotor que te vendió. Escribe abajo su código de referido para que el negocio confirme a quién le pagas.</p>':
   f.map(([k,v])=>`<div class="pf"><span>${esc(k)}:</span><b>${esc(v)}</b><button data-v="${esc(v)}" data-k="${esc(k)}" onclick="copiar(this)">📋</button></div>`).join('')+
   '<p class="mut" style="margin-top:6px">Haz el pago y escribe abajo el número de referencia. El negocio lo verifica y acepta tu pedido.</p>')}
 function copiar(b){navigator.clipboard&&navigator.clipboard.writeText(b.dataset.v);toast(b.dataset.k+' copiado')}
@@ -96,14 +96,15 @@ function asegCliente(nombre,tel,dir){cliente=cliente||{id:'c'+Date.now()};Object
 function pedir(){const nombre=$('#cN').value.trim(),tel=$('#cT').value.trim(),dir=$('#cD').value.trim(),pid=$('#cP').value,cta=N().cuentas.find(x=>x.id===pid);
  if(!nombre||!tel||!dir)return toast('Completa nombre, teléfono y dirección');
  if(!cta)return toast('Selecciona un método de pago');const pago=cta.nombre;let refPago='';
- if(pid==='efectivo'){refPago='Efectivo (Nota: '+$('#cO').value.trim()+')';if(!$('#cO').value.trim())return toast('Escribe una observación sobre tu pago en efectivo')}
+ let promo=null;if(pid==='efectivo'){const c=$('#cO').value.trim().toUpperCase();if(!c){$('#cO').focus();return toast('Escribe el código del promotor que te vendió')}
+  promo=N().vendedores.find(v=>v.cod===c);if(!promo){$('#cO').focus();return toast('Ese código de promotor no existe')}refPago=promo.cod;localStorage.setItem('va_ref_'+BIZ,promo.cod)}
  else{refPago=$('#cR').value.trim();if(!refPago){$('#cR').focus();return toast('Ingresa el número de referencia del pago')}}asegCliente(nombre,tel,dir);
  const it=items().map(i=>({n:i.n,p:i.p,q:i.q})),total=it.reduce((s,i)=>s+i.p*i.q,0);
  const cod='#'+(1001+DB.pedidos.filter(p=>p.biz===BIZ).length);
- DB.pedidos.push({cod,biz:BIZ,cliente:{...cliente},items:it,total,pago,refPago,pagoEstado:pid==='efectivo'?'contra entrega':'por verificar',ref:localStorage.getItem('va_ref_'+BIZ)||null,estado:'nuevo',t:Date.now()});
- enviar(cliente.id,'negocio',`Hola, hice el pedido ${cod} por ${money(total)}. Pago: ${pago}${pid==='efectivo'?'':' · Ref. '+refPago}.`,cod,nombre);
+ DB.pedidos.push({cod,biz:BIZ,cliente:{...cliente},items:it,total,pago,refPago,pagoEstado:'por verificar',ref:localStorage.getItem('va_ref_'+BIZ)||null,estado:'nuevo',t:Date.now()});
+ enviar(cliente.id,'negocio',`Hola, hice el pedido ${cod} por ${money(total)}. Pago: ${pago}${pid==='efectivo'?' al promotor '+promo.n+' ('+promo.cod+')':' · Ref. '+refPago}.`,cod,nombre);
  cart={};saveCart();pintarProductos();markSeen();
- if(!DB.autoOff)setTimeout(()=>enviar('negocio',cliente.id,`¡Gracias ${nombre}! Recibimos tu pedido ${cod}. ${pid==='efectivo'?'En breve te confirmamos la entrega':'Estamos verificando tu pago'} 🙌`,cod),2500);
+ if(!DB.autoOff)setTimeout(()=>enviar('negocio',cliente.id,`¡Gracias ${nombre}! Recibimos tu pedido ${cod}. ${pid==='efectivo'?'Estamos confirmando con tu promotor':'Estamos verificando tu pago'} 🙌`,cod),2500);
  toast('¡Pedido enviado! 🎉');abrirChat()}
 function abrirChat(){$('#dCart').classList.remove('open');$('#dChat').classList.add('open');$('#chatTit').textContent=N().emoji+' '+N().nombre;pintarChat()}
 function pintarChat(){const box=$('#msgs');
