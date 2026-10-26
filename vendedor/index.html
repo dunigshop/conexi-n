@@ -1,228 +1,90 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="theme-color" content="#0b0b0f">
-<link rel="manifest" href="manifest.json">
-<title>Vendedor Automático · Demo</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07070a">
+<title>Vendedor Automático · Tu negocio vende mientras tú atiendes</title>
+<meta name="description" content="Tienda en línea, pedidos, chat con tus clientes, cobros y equipo de vendedores en una sola app.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"><link rel="manifest" href="manifest.json">
 <style>
-:root{--bg:#0b0b0f;--card:#16161d;--line:#26262f;--txt:#f2f2f5;--mut:#9a9aa8;--gold:#d4af37;--ok:#2ecc71;--warn:#f39c12;--bad:#e74c3c}
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-body{background:var(--bg);color:var(--txt);min-height:100vh;padding-bottom:76px}
-header{position:sticky;top:0;z-index:5;background:rgba(11,11,15,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:10px}
-header .logo{width:38px;height:38px;border-radius:10px;background:var(--gold);color:#000;display:grid;place-items:center;font-weight:800}
-header h1{font-size:16px}header small{color:var(--mut);font-size:12px;display:block}
-header select{margin-left:auto;background:var(--card);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:6px}
-main{max-width:720px;margin:0 auto;padding:16px}
-nav.tabs{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;z-index:6}
-nav.tabs button{flex:1;background:none;border:0;color:var(--mut);padding:10px 4px;font-size:12px;position:relative}
-nav.tabs button.on{color:var(--gold)}nav.tabs b{display:block;font-size:20px}
-.badge{position:absolute;top:4px;right:calc(50% - 22px);background:var(--bad);color:#fff;border-radius:10px;font-size:10px;padding:1px 6px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
-.prod .img{height:110px;border-radius:10px;display:grid;place-items:center;font-size:46px;margin-bottom:8px;background:#1f1f29}
-.prod h3{font-size:14px}.price{color:var(--gold);font-weight:700;margin:4px 0 8px}
-.btn{background:var(--gold);color:#000;border:0;border-radius:10px;padding:10px 14px;font-weight:700;width:100%;cursor:pointer}
-.btn.sec{background:#26262f;color:var(--txt)}.btn.sm{width:auto;padding:6px 10px;font-size:12px}
-input,select,textarea{width:100%;background:#0f0f15;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px;margin:6px 0 10px;font-size:14px}
-label{font-size:12px;color:var(--mut)}
-h2{font-size:18px;margin:6px 0 12px}h4{margin:12px 0 6px;font-size:14px}
-.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
-.pill{font-size:11px;padding:3px 8px;border-radius:20px;background:#26262f}
-.pill.nuevo{background:#3b2f0a;color:var(--gold)}.pill.confirmado{background:#0f2e40;color:#5dade2}.pill.entregado{background:#0e3320;color:var(--ok)}.pill.cobrado{background:#0e3320;color:var(--ok)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.stats .card{text-align:center}.stats b{display:block;font-size:20px;color:var(--gold)}.stats span{font-size:11px;color:var(--mut)}
-.chatbox{display:flex;flex-direction:column;height:calc(100vh - 230px)}
-.msgs{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px}
-.m{max-width:78%;padding:8px 12px;border-radius:14px;font-size:14px;line-height:1.35}
-.m.yo{align-self:flex-end;background:var(--gold);color:#000;border-bottom-right-radius:4px}
-.m.el{align-self:flex-start;background:#26262f;border-bottom-left-radius:4px}
-.m small{display:block;font-size:10px;opacity:.6;margin-top:2px}
-.send{display:flex;gap:8px}.send input{margin:0}.send .btn{width:auto}
-.toast{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;padding:10px 16px;border-radius:12px;font-weight:600;z-index:9;display:none;max-width:90%}
-.hide{display:none}.mut{color:var(--mut);font-size:13px}
-.cartbar{position:fixed;bottom:66px;left:12px;right:12px;max-width:696px;margin:auto;z-index:4}
-.qty{display:flex;align-items:center;gap:8px}.qty button{width:28px;height:28px;border-radius:8px;border:0;background:#26262f;color:var(--txt)}
-.conv{cursor:pointer}.conv:hover{background:#1c1c25}
-.demo{background:#1a1406;border:1px dashed var(--gold);color:var(--gold);font-size:12px;padding:8px 10px;border-radius:10px;margin-bottom:12px}
+.mock{position:relative;height:440px;margin-top:40px}
+@media(min-width:900px){.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}.mock{margin:0}}
+.phone{position:absolute;width:210px;height:420px;border-radius:34px;background:#0c0c11;border:2px solid rgba(255,210,63,.55);box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 60px rgba(255,190,0,.25);overflow:hidden;padding:12px}
+.phone.a{left:50%;margin-left:-190px;animation:fl1 6s ease-in-out infinite}.phone.b{left:50%;margin-left:-20px;top:20px;animation:fl1 6s ease-in-out -3s infinite}
+@keyframes fl1{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-16px) rotate(1deg)}}
+.phone .scr{border-radius:24px;height:100%;overflow:hidden;background:var(--bg2);display:flex;flex-direction:column}
+.phone .hd{height:120px;background-size:cover;background-position:center;position:relative}.phone .hd::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent,var(--bg2))}
+.phone .g{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px}.phone .g img{border-radius:10px;aspect-ratio:1;object-fit:cover}
+.phone .bb{margin:6px 8px;padding:8px 10px;border-radius:12px;font-size:11px}.bb.l{background:#23232c;align-self:flex-start;max-width:80%}.bb.r{background:var(--gold);color:#1a1200;align-self:flex-end;max-width:80%}
+.phone .bb{opacity:0;animation:msg 8s infinite}.bb:nth-child(2){animation-delay:1s}.bb:nth-child(3){animation-delay:2.2s}.bb:nth-child(4){animation-delay:3.4s}.bb:nth-child(5){animation-delay:4.6s}
+@keyframes msg{0%{opacity:0;transform:translateY(8px)}8%,85%{opacity:1;transform:none}100%{opacity:0}}
+.notif{position:absolute;right:0;top:-10px;background:var(--gold);color:#1a1200;border-radius:16px;padding:10px 14px;font-size:13px;font-weight:700;box-shadow:0 10px 30px rgba(255,190,0,.45);animation:nt 5s ease-in-out infinite;z-index:3}
+@keyframes nt{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.04)}}
+.demo-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.dc{border-radius:var(--r);overflow:hidden;background:var(--card);border:1px solid var(--line);transition:.3s}
+.dc:hover{transform:translateY(-6px);border-color:var(--g3)}.dc .im{height:150px;background-size:cover;background-position:center;animation:kb 14s ease-in-out infinite alternate}
+.dc .bd{padding:18px}.dc h3{margin-bottom:6px}.dc p{color:var(--mut);font-size:14px;margin-bottom:14px}
+.cta{text-align:center;border-radius:28px;padding:50px 24px;background:radial-gradient(circle at 50% 0,rgba(255,200,0,.25),transparent 60%),var(--card);border:1px solid rgba(255,210,63,.35)}
+@media(max-width:420px){.mock{transform:scale(.85);transform-origin:top center}}
+.note{max-width:720px;margin:24px auto 0;color:var(--mut);font-size:13px;text-align:center}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo" id="logo">D</div>
-  <div><h1 id="bizName">Negocio</h1><small id="roleLbl">Tienda</small></div>
-  <select id="bizSel" title="Negocio de demo"></select>
+<nav class="top" id="nav"><div class="wrap"><a class="brand" href="#"><i>⚡</i><span>Vendedor <span class="gtxt">Automático</span></span></a><span class="sp"></span><a class="btn sm" href="#demo">Ver demo</a></div></nav>
+
+<header class="hero">
+  <div class="bg" style="background-image:url(img/hero-belleza.jpg);opacity:.35"></div><div class="shade"></div><canvas id="sparks"></canvas>
+  <div class="wrap in">
+    <div>
+      <span class="kicker"><b></b> Para emprendedores y negocios locales</span>
+      <h1>Tu negocio <span class="gtxt">vende</span> mientras tú atiendes</h1>
+      <p class="lead">Tienda en línea, pedidos, chat con tus clientes, cobros y equipo de vendedores con comisiones. Todo en una sola app, desde tu teléfono.</p>
+      <div class="ctas"><a class="btn" href="#demo">🚀 Probar la demo</a><a class="btn ghost" href="#como">¿Cómo funciona?</a></div>
+      <div class="trust"><div><b>24/7</b>tienda abierta</div><div><b>🔔</b>aviso al instante</div><div><b>0</b>programación</div></div>
+    </div>
+    <div class="mock">
+      <div class="notif">🧾 Nuevo pedido · $22.00</div>
+      <div class="phone a"><div class="scr"><div class="hd" style="background-image:url(img/hero-dulces.jpg)"></div><div class="g"><img src="img/torta.jpg"><img src="img/cupcakes.jpg"><img src="img/quesillo.jpg"><img src="img/galletas.jpg"></div></div></div>
+      <div class="phone b"><div class="scr" style="padding-top:20px"><div class="bb l">Hola, ¿tienen torta para hoy? 🎂</div><div class="bb r">¡Sí! Te la llevamos a las 4 pm</div><div class="bb l">Perfecto, ya hice el pedido</div><div class="bb r">Recibido #1001 ✅</div><div class="bb r">Pedido en camino 🚚</div></div></div>
+    </div>
+  </div>
 </header>
-<main id="app"></main>
-<div class="toast" id="toast"></div>
-<nav class="tabs" id="tabs">
-  <button data-v="tienda"><b>🛍️</b>Tienda</button>
-  <button data-v="chat"><b>💬</b>Chat<span class="badge hide" id="bChat"></span></button>
-  <button data-v="panel"><b>📊</b>Panel<span class="badge hide" id="bPanel"></span></button>
-  <button data-v="vendedor"><b>🤝</b>Vendedor</button>
-</nav>
+
+<div class="marquee"><div class="tr"><img src="img/torta.jpg"><img src="img/labial.jpg"><img src="img/quesillo.jpg"><img src="img/perfume.jpg"><img src="img/galletas.jpg"><img src="img/crema.jpg"><img src="img/cupcakes.jpg"><img src="img/esmaltes.jpg"><img src="img/torta.jpg"><img src="img/labial.jpg"><img src="img/quesillo.jpg"><img src="img/perfume.jpg"><img src="img/galletas.jpg"><img src="img/crema.jpg"><img src="img/cupcakes.jpg"><img src="img/esmaltes.jpg"></div></div>
+
+<section id="como"><div class="wrap">
+  <div class="sh reveal"><h2>Todo lo que tu negocio <span class="gtxt">necesita</span></h2><p>Menos mensajes perdidos, más pedidos cerrados.</p></div>
+  <div class="feats">
+    <div class="ft reveal"><span class="ic">🛍️</span><h3>Tienda propia</h3><p>Tu catálogo con fotos, precios y carrito, en un enlace para compartir.</p></div>
+    <div class="ft reveal"><span class="ic">🧾</span><h3>Pedidos ordenados</h3><p>Cada pedido llega con datos, dirección y forma de pago. Lo confirmas con un toque.</p></div>
+    <div class="ft reveal"><span class="ic">💬</span><h3>Chat interno con sonido</h3><p>Conversa con tus clientes dentro de la app, sin depender de WhatsApp.</p></div>
+    <div class="ft reveal"><span class="ic">💳</span><h3>Cobros a tu manera</h3><p>Pago móvil, efectivo, Zelle o lo que uses. Tú decides.</p></div>
+    <div class="ft reveal"><span class="ic">🤝</span><h3>Equipo de vendedores</h3><p>Cada vendedor con su enlace, comisión automática, metas y ranking.</p></div>
+    <div class="ft reveal"><span class="ic">📊</span><h3>Panel del dueño</h3><p>Ventas del día, pedidos pendientes y mensajes en un solo lugar, separado de tu tienda.</p></div>
+  </div>
+</div></section>
+
+<section id="demo" style="background:var(--bg2)"><div class="wrap">
+  <div class="sh reveal"><h2>Pruébalo <span class="gtxt">ahora</span></h2><p>Abre la tienda en una pestaña y el panel en otra: verás llegar pedidos y mensajes con sonido.</p></div>
+  <div class="demo-cards">
+    <a class="dc reveal" href="tienda/?n=dulces"><div class="im" style="background-image:url(img/hero-dulces.jpg)"></div><div class="bd"><h3>🛍️ Tienda del cliente</h3><p>Lo que ven tus clientes: catálogo, carrito, pedido y chat.</p><span class="btn sm">Abrir tienda</span></div></a>
+    <a class="dc reveal" href="panel/?n=dulces"><div class="im" style="background-image:url(img/hero-belleza.jpg)"></div><div class="bd"><h3>📊 Panel del negocio</h3><p>Solo para el dueño. PIN de demo: 0000.</p><span class="btn sm">Abrir panel</span></div></a>
+    <a class="dc reveal" href="promotor/?n=dulces"><div class="im" style="background-image:url(img/cupcakes.jpg)"></div><div class="bd"><h3>🤝 App del vendedor</h3><p>Enlace, comisiones y ranking. Demo: ANA01 / 1234.</p><span class="btn sm">Abrir app</span></div></a>
+  </div>
+  <p class="note">Demo: los datos se guardan solo en este dispositivo. La versión real sincroniza tienda, panel y vendedores en la nube.</p>
+</div></section>
+
+<section><div class="wrap"><div class="cta reveal"><h2 style="font-size:clamp(26px,6vw,40px);font-weight:800">El momento es <span class="gtxt">hoy</span></h2>
+<p class="mut" style="margin:10px 0 22px">Lleva tu negocio al siguiente nivel con tu propia tienda y tu equipo de ventas.</p><a class="btn" href="tienda/?n=dulces">Ver la tienda de ejemplo</a></div></div></section>
+
+<footer>Vendedor Automático · DUNIGSHOP</footer>
 <script>
-/* ===== Vendedor Automático — DEMO (datos guardados en este teléfono) ===== */
-const KEY='va_demo_v1';
-const SEED={
- negocios:{
-  dulces:{nombre:'Dulces Mary',emoji:'🍰',moneda:'USD',pagos:['Pago móvil','Efectivo contra entrega','Zelle'],comision:10,
-   productos:[{id:'p1',n:'Torta de chocolate',p:15,e:'🎂'},{id:'p2',n:'Quesillo',p:6,e:'🍮'},{id:'p3',n:'Galletas x12',p:4,e:'🍪'},{id:'p4',n:'Cupcakes x6',p:7,e:'🧁'}],
-   vendedores:[{cod:'ANA01',n:'Ana',pin:'1234'},{cod:'LUIS02',n:'Luis',pin:'1234'}]},
-  belleza:{nombre:'Belleza Luz',emoji:'💄',moneda:'USD',pagos:['Pago móvil','Efectivo contra entrega'],comision:15,
-   productos:[{id:'b1',n:'Labial mate',p:5,e:'💄'},{id:'b2',n:'Crema facial',p:9,e:'🧴'},{id:'b3',n:'Perfume 50ml',p:18,e:'🌸'},{id:'b4',n:'Esmaltes x3',p:6,e:'💅'}],
-   vendedores:[{cod:'CARLA1',n:'Carla',pin:'1234'}]}
- },
- pedidos:[],mensajes:[]
-};
-let DB=JSON.parse(localStorage.getItem(KEY)||'null')||structuredClone(SEED);
-const save=()=>{localStorage.setItem(KEY,JSON.stringify(DB));bc&&bc.postMessage('sync')};
-const bc='BroadcastChannel' in window?new BroadcastChannel('va_demo'):null;
-const qs=new URLSearchParams(location.search);
-let biz=qs.get('n')&&DB.negocios[qs.get('n')]?qs.get('n'):'dulces';
-const ref=qs.get('ref');if(ref)localStorage.setItem('va_ref_'+biz,ref.toUpperCase());
-let view=location.hash.slice(1)||'tienda',cart={},chatWith=null,vendedorSes=null;
-let cliente=JSON.parse(localStorage.getItem('va_cliente')||'null');
-const N=()=>DB.negocios[biz];const $=s=>document.querySelector(s);
-const money=v=>'$'+Number(v).toFixed(2);
-const hora=t=>new Date(t).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'});
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-/* ---- Sonido de notificación (sin archivos) ---- */
-let actx;function ding(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
- [880,1320].forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;
- o.connect(g);g.connect(actx.destination);const t=actx.currentTime+i*.15;g.gain.setValueAtTime(.0001,t);
- g.gain.exponentialRampToValueAtTime(.35,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.35);o.start(t);o.stop(t+.4)});
- navigator.vibrate&&navigator.vibrate([80,40,80]);}catch(e){}}
-document.addEventListener('click',()=>{actx=actx||new (window.AudioContext||window.webkitAudioContext)()},{once:true});
-function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',2600)}
-function notify(title,body){ding();toast(title+': '+body);
- if('Notification' in window&&Notification.permission==='granted'&&document.hidden){navigator.serviceWorker?.ready.then(r=>r.showNotification(title,{body,icon:'icon.png'})).catch(()=>new Notification(title,{body}))}}
-
-/* ---- Mensajería interna ---- */
-function enviar(de,para,texto,pedido){DB.mensajes.push({id:Date.now()+Math.random(),biz,de,para,texto,nom:(de!=='negocio'&&cliente)?cliente.nombre:null,pedido:pedido||null,t:Date.now(),leido:false});save()}
-function convs(){const m=DB.mensajes.filter(x=>x.biz===biz);const ids=[...new Set(m.map(x=>x.de==='negocio'?x.para:x.de))];
- return ids.map(id=>{const ms=m.filter(x=>x.de===id||x.para===id);return{id,nombre:(DB.pedidos.find(p=>p.cliente.id===id)||{cliente:{nombre:(ms.find(x=>x.nom)||{}).nom||'Cliente'}}).cliente.nombre,ult:ms[ms.length-1],nl:ms.filter(x=>x.para==='negocio'&&!x.leido).length}}).sort((a,b)=>b.ult.t-a.ult.t)}
-let lastCount=DB.mensajes.length,lastPed=DB.pedidos.length;
-function checkNew(){const nm=DB.mensajes.slice(lastCount),np=DB.pedidos.slice(lastPed);lastCount=DB.mensajes.length;lastPed=DB.pedidos.length;
- nm.forEach(m=>{if(m.biz!==biz)return;if(m.para==='negocio'&&view==='panel')notify('Nuevo mensaje',m.texto);
-  else if(cliente&&m.para===cliente.id&&view!=='panel')notify(N().nombre,m.texto)});
- np.forEach(p=>{if(p.biz===biz&&(view==='panel'))notify('Nuevo pedido',p.cliente.nombre+' · '+money(p.total))});}
-bc&&(bc.onmessage=()=>{DB=JSON.parse(localStorage.getItem(KEY));checkNew();render()});
-window.addEventListener('storage',e=>{if(e.key===KEY){DB=JSON.parse(e.newValue);checkNew();render()}});
-
-/* ---- Vistas ---- */
-function vTienda(){const n=N();const items=Object.entries(cart).filter(([,q])=>q>0);
- const total=items.reduce((s,[id,q])=>s+n.productos.find(p=>p.id===id).p*q,0);
- const r=localStorage.getItem('va_ref_'+biz);
- return `${r?`<div class="demo">Atendido por el vendedor <b>${esc(r)}</b></div>`:''}
- <h2>${n.emoji} Productos</h2><div class="grid">${n.productos.map(p=>`<div class="card prod"><div class="img">${p.e}</div><h3>${esc(p.n)}</h3><div class="price">${money(p.p)}</div>
- ${cart[p.id]?`<div class="qty"><button onclick="q('${p.id}',-1)">−</button><b>${cart[p.id]}</b><button onclick="q('${p.id}',1)">+</button></div>`:`<button class="btn sm" onclick="q('${p.id}',1)">Agregar</button>`}</div>`).join('')}</div>
- ${items.length?`<div id="checkout" class="card" style="margin-top:14px"><h4>Tu pedido</h4>${items.map(([id,qn])=>{const p=n.productos.find(x=>x.id===id);return`<div class="row"><span>${qn} × ${esc(p.n)}</span><b>${money(p.p*qn)}</b></div>`}).join('')}
- <div class="row"><b>Total</b><b class="price">${money(total)}</b></div>
- <label>Nombre</label><input id="cN" value="${esc(cliente?.nombre||'')}" placeholder="Tu nombre">
- <label>Teléfono</label><input id="cT" value="${esc(cliente?.tel||'')}" inputmode="tel" placeholder="0414...">
- <label>Dirección / sector</label><input id="cD" value="${esc(cliente?.dir||'')}" placeholder="Sector, calle, referencia">
- <label>Forma de pago</label><select id="cP">${n.pagos.map(x=>`<option>${x}</option>`).join('')}</select>
- <button class="btn" onclick="pedir()">Confirmar pedido</button></div>
- <div class="cartbar"><button class="btn" onclick="document.getElementById('checkout').scrollIntoView({behavior:'smooth'})">Ver pedido · ${money(total)}</button></div>`:''}`}
-window.q=(id,d)=>{cart[id]=Math.max(0,(cart[id]||0)+d);render()};
-window.pedir=()=>{const n=N(),nombre=$('#cN').value.trim(),tel=$('#cT').value.trim(),dir=$('#cD').value.trim();
- if(!nombre||!tel||!dir)return toast('Completa nombre, teléfono y dirección');
- cliente=cliente||{id:'c'+Date.now()};Object.assign(cliente,{nombre,tel,dir});localStorage.setItem('va_cliente',JSON.stringify(cliente));
- const items=Object.entries(cart).filter(([,q])=>q>0).map(([id,qn])=>{const p=n.productos.find(x=>x.id===id);return{n:p.n,p:p.p,q:qn}});
- const total=items.reduce((s,i)=>s+i.p*i.q,0),cod='#'+String(DB.pedidos.length+1001);
- DB.pedidos.push({cod,biz,cliente:{...cliente},items,total,pago:$('#cP').value,ref:localStorage.getItem('va_ref_'+biz)||null,estado:'nuevo',t:Date.now()});
- enviar(cliente.id,'negocio',`Hola, hice el pedido ${cod} por ${money(total)} (${$('#cP').value}).`,cod);
- cart={};toast('¡Pedido enviado! Te respondemos por el chat');
- setTimeout(()=>{enviar('negocio',cliente.id,`¡Gracias ${nombre}! Recibimos tu pedido ${cod}. En breve te confirmamos la entrega 🙌`,cod)},2500);
- go('chat')};
-
-function vChatCliente(){if(!cliente)return`<div class="card"><h2>💬 Chat</h2><p class="mut">Haz un pedido o escribe tu nombre para hablar con ${esc(N().nombre)}.</p>
- <input id="cN2" placeholder="Tu nombre"><button class="btn" onclick="iniciar()">Empezar chat</button></div>`;
- const ms=DB.mensajes.filter(m=>m.biz===biz&&(m.de===cliente.id||m.para===cliente.id));
- ms.forEach(m=>{if(m.para===cliente.id)m.leido=true});localStorage.setItem(KEY,JSON.stringify(DB));
- return chatUI(ms,cliente.id,`Chat con ${esc(N().nombre)}`,'mandarC')}
-window.iniciar=()=>{const n=$('#cN2').value.trim();if(!n)return;cliente={id:'c'+Date.now(),nombre:n};localStorage.setItem('va_cliente',JSON.stringify(cliente));render()};
-function chatUI(ms,yo,titulo,fn){return`<div class="chatbox"><h2>${titulo}</h2><div class="msgs" id="msgs">${ms.map(m=>`<div class="m ${m.de===yo?'yo':'el'}">${esc(m.texto)}<small>${hora(m.t)}${m.pedido?' · '+m.pedido:''}</small></div>`).join('')||'<p class="mut">Sin mensajes todavía.</p>'}</div>
- <div class="send"><input id="txt" placeholder="Escribe un mensaje" onkeydown="if(event.key==='Enter')${fn}()"><button class="btn" onclick="${fn}()">Enviar</button></div></div>`}
-window.mandarC=()=>{const t=$('#txt').value.trim();if(!t)return;enviar(cliente.id,'negocio',t);
- if(!DB._autoOff)setTimeout(()=>enviar('negocio',cliente.id,'Recibido 👍 (respuesta automática de demo)'),2000);render()};
-window.mandarN=()=>{const t=$('#txt').value.trim();if(!t||!chatWith)return;enviar('negocio',chatWith,t);render()};
-
-let panelTab='pedidos';
-function vPanel(){const n=N(),ps=DB.pedidos.filter(p=>p.biz===biz),hoy=new Date().toDateString();
- const ventasHoy=ps.filter(p=>new Date(p.t).toDateString()===hoy&&p.estado==='cobrado').reduce((s,p)=>s+p.total,0);
- const nuevos=ps.filter(p=>p.estado==='nuevo').length,nl=convs().reduce((s,c)=>s+c.nl,0);
- const tab=(id,t)=>`<button class="btn sm ${panelTab===id?'':'sec'}" onclick="pt('${id}')">${t}</button>`;
- let body='';
- if(panelTab==='pedidos')body=ps.slice().reverse().map(p=>`<div class="card" style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><b>${p.cod} · ${esc(p.cliente.nombre)}</b><span class="pill ${p.estado}">${p.estado}</span></div>
-  <p class="mut">${p.items.map(i=>i.q+'× '+esc(i.n)).join(', ')}</p><p class="mut">📍 ${esc(p.cliente.dir||'')} · 📞 ${esc(p.cliente.tel||'')} · ${esc(p.pago)}${p.ref?' · 🤝 '+esc(p.ref):''}</p>
-  <div class="row" style="border:0"><b class="price">${money(p.total)}</b><span>
-  ${p.estado==='nuevo'?`<button class="btn sm" onclick="est('${p.cod}','confirmado')">Confirmar</button>`:''}
-  ${p.estado==='confirmado'?`<button class="btn sm" onclick="est('${p.cod}','entregado')">Entregado</button>`:''}
-  ${p.estado==='entregado'?`<button class="btn sm" onclick="est('${p.cod}','cobrado')">Cobrado</button>`:''}
-  <button class="btn sm sec" onclick="abrir('${p.cliente.id}')">💬</button></span></div></div>`).join('')||'<p class="mut">Aún no hay pedidos. Haz uno desde la pestaña Tienda.</p>';
- if(panelTab==='mensajes'){if(chatWith){const ms=DB.mensajes.filter(m=>m.biz===biz&&(m.de===chatWith||m.para===chatWith));ms.forEach(m=>{if(m.para==='negocio')m.leido=true});localStorage.setItem(KEY,JSON.stringify(DB));
-   const c=convs().find(x=>x.id===chatWith);body=`<button class="btn sm sec" onclick="chatWith=null;render()">← Conversaciones</button>`+chatUI(ms,'negocio',esc(c?c.nombre:'Cliente'),'mandarN')}
-  else body=convs().map(c=>`<div class="row conv" onclick="abrir('${c.id}')"><span><b>${esc(c.nombre)}</b><br><span class="mut">${esc(c.ult.texto.slice(0,40))}</span></span>${c.nl?`<span class="pill nuevo">${c.nl}</span>`:`<span class="mut">${hora(c.ult.t)}</span>`}</div>`).join('')||'<p class="mut">Sin conversaciones.</p>'}
- if(panelTab==='vendedores'){const base=location.href.split('?')[0].split('#')[0];
-  body=rank().map((v,i)=>`<div class="card" style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><b>${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${esc(v.n)} (${v.cod})</b><b class="price">${money(v.com)}</b></div>
-   <p class="mut">${v.cant} pedidos cobrados · ventas ${money(v.ventas)} · comisión ${n.comision}%</p>
-   <input readonly value="${base}?n=${biz}&ref=${v.cod}" onclick="this.select();navigator.clipboard&&navigator.clipboard.writeText(this.value);toast('Enlace copiado')"></div>`).join('')+
-   `<div class="card"><h4>Agregar vendedor</h4><input id="vN" placeholder="Nombre"><input id="vC" placeholder="Código (ej. PEDRO3)"><button class="btn" onclick="addV()">Agregar</button></div>`}
- if(panelTab==='productos')body=n.productos.map(p=>`<div class="row"><span>${p.e} ${esc(p.n)}</span><span><b class="price">${money(p.p)}</b> <button class="btn sm sec" onclick="delP('${p.id}')">✕</button></span></div>`).join('')+
-  `<div class="card" style="margin-top:12px"><h4>Nuevo producto</h4><input id="pN" placeholder="Nombre"><input id="pP" type="number" step="0.01" placeholder="Precio"><input id="pE" placeholder="Emoji (o foto en la versión real)" value="📦"><button class="btn" onclick="addP()">Agregar</button></div>`;
- if(panelTab==='ajustes')body=`<div class="card"><label>Nombre del negocio</label><input id="aN" value="${esc(n.nombre)}"><label>Comisión vendedores (%)</label><input id="aC" type="number" value="${n.comision}">
-  <label><input type="checkbox" style="width:auto" ${DB._autoOff?'':'checked'} onchange="DB._autoOff=!this.checked;save()"> Respuesta automática de demo</label>
-  <button class="btn" onclick="guardarA()">Guardar</button><br><br><button class="btn sec" onclick="permiso()">🔔 Activar notificaciones</button><br><br>
-  <button class="btn sec" onclick="if(confirm('¿Borrar todos los datos de la demo?')){localStorage.removeItem('${KEY}');localStorage.removeItem('va_cliente');location.reload()}">Reiniciar demo</button></div>`;
- return`<div class="stats"><div class="card"><b>${money(ventasHoy)}</b><span>Cobrado hoy</span></div><div class="card"><b>${nuevos}</b><span>Pedidos nuevos</span></div><div class="card"><b>${nl}</b><span>Mensajes</span></div></div>
- <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${tab('pedidos','Pedidos')}${tab('mensajes','Mensajes')}${tab('vendedores','Vendedores')}${tab('productos','Productos')}${tab('ajustes','Ajustes')}</div>${body}`}
-window.pt=t=>{panelTab=t;chatWith=null;render()};
-window.abrir=id=>{panelTab='mensajes';chatWith=id;go('panel')};
-window.est=(cod,e)=>{const p=DB.pedidos.find(x=>x.cod===cod&&x.biz===biz);p.estado=e;save();
- const txt={confirmado:`Tu pedido ${cod} está confirmado ✅ Va en camino pronto.`,entregado:`Tu pedido ${cod} fue entregado. ¡Gracias por tu compra! 🙏`}[e];
- if(txt)enviar('negocio',p.cliente.id,txt,cod);render()};
-function rank(){const n=N();return n.vendedores.map(v=>{const ps=DB.pedidos.filter(p=>p.biz===biz&&p.ref===v.cod&&p.estado==='cobrado');const ventas=ps.reduce((s,p)=>s+p.total,0);
- return{...v,cant:ps.length,ventas,com:ventas*n.comision/100}}).sort((a,b)=>b.ventas-a.ventas)}
-window.addV=()=>{const n=$('#vN').value.trim(),c=$('#vC').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(!n||!c)return;N().vendedores.push({cod:c,n,pin:'1234'});save();render()};
-window.addP=()=>{const n=$('#pN').value.trim(),p=parseFloat($('#pP').value);if(!n||!(p>0))return;N().productos.push({id:'x'+Date.now(),n,p,e:$('#pE').value||'📦'});save();render()};
-window.delP=id=>{N().productos=N().productos.filter(p=>p.id!==id);save();render()};
-window.guardarA=()=>{N().nombre=$('#aN').value.trim()||N().nombre;N().comision=Math.max(0,parseFloat($('#aC').value)||0);save();toast('Guardado');render()};
-window.permiso=()=>{if(!('Notification' in window))return toast('Este navegador no permite notificaciones');Notification.requestPermission().then(p=>toast(p==='granted'?'Notificaciones activadas':'Permiso no concedido'))};
-
-function vVendedor(){if(!vendedorSes)return`<div class="card"><h2>🤝 Acceso vendedor</h2><p class="mut">Demo: código ANA01 · PIN 1234</p>
- <label>Código</label><input id="lC" placeholder="ANA01"><label>PIN</label><input id="lP" type="password" inputmode="numeric" placeholder="••••"><button class="btn" onclick="login()">Entrar</button></div>`;
- const v=rank().find(x=>x.cod===vendedorSes),pos=rank().findIndex(x=>x.cod===vendedorSes)+1,base=location.href.split('?')[0].split('#')[0];
- const mis=DB.pedidos.filter(p=>p.biz===biz&&p.ref===vendedorSes);
- return`<h2>Hola, ${esc(v.n)} 👋</h2><div class="stats"><div class="card"><b>${money(v.com)}</b><span>Mi comisión</span></div><div class="card"><b>${v.cant}</b><span>Cobrados</span></div><div class="card"><b>#${pos}</b><span>Ranking</span></div></div>
- <div class="card"><h4>Mi enlace para compartir</h4><input readonly value="${base}?n=${biz}&ref=${v.cod}" onclick="this.select();navigator.clipboard&&navigator.clipboard.writeText(this.value);toast('Enlace copiado')">
- <p class="mut">Cada venta que entre por tu enlace se te asigna sola.</p></div>
- <h4>Mis pedidos</h4>${mis.slice().reverse().map(p=>`<div class="row"><span>${p.cod} · ${esc(p.cliente.nombre)}</span><span class="pill ${p.estado}">${p.estado}</span></div>`).join('')||'<p class="mut">Aún no tienes pedidos.</p>'}
- <br><button class="btn sec" onclick="vendedorSes=null;render()">Salir</button>`}
-window.login=()=>{const c=$('#lC').value.trim().toUpperCase(),p=$('#lP').value;const v=N().vendedores.find(x=>x.cod===c&&x.pin===p);if(!v)return toast('Código o PIN incorrecto');vendedorSes=c;render()};
-
-/* ---- Router ---- */
-function go(v){view=v;location.hash=v;render()}
-function render(){const n=N();$('#bizName').textContent=n.nombre;$('#logo').textContent=n.emoji;
- $('#roleLbl').textContent={tienda:'Tienda en línea',chat:'Mensajes',panel:'Panel del dueño',vendedor:'App del vendedor'}[view];
- document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===view));
- const nl=convs().reduce((s,c)=>s+c.nl,0),nuevos=DB.pedidos.filter(p=>p.biz===biz&&p.estado==='nuevo').length;
- const bp=$('#bPanel');bp.textContent=nl+nuevos;bp.classList.toggle('hide',!(nl+nuevos));
- const cu=cliente?DB.mensajes.filter(m=>m.biz===biz&&m.para===cliente.id&&!m.leido).length:0;const bcE=$('#bChat');bcE.textContent=cu;bcE.classList.toggle('hide',!cu||view==='chat');
- const keep=document.activeElement&&document.activeElement.id==='txt'?$('#txt').value:null;
- $('#app').innerHTML=view==='tienda'?vTienda():view==='chat'?vChatCliente():view==='panel'?vPanel():vVendedor();
- const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight;if(keep!==null&&$('#txt')){$('#txt').value=keep;$('#txt').focus()}}
-$('#bizSel').innerHTML=Object.entries(DB.negocios).map(([k,v])=>`<option value="${k}" ${k===biz?'selected':''}>${v.emoji} ${v.nombre}</option>`).join('');
-$('#bizSel').onchange=e=>{biz=e.target.value;cart={};chatWith=null;vendedorSes=null;render()};
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>go(b.dataset.v));
-window.addEventListener('hashchange',()=>{const v=location.hash.slice(1);if(v&&v!==view){view=v;render()}});
-/* sondeo ligero para respuestas automáticas en la misma pestaña */
-setInterval(()=>{if(DB.mensajes.length!==lastCount||DB.pedidos.length!==lastPed){checkNew();render()}},800);
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-render();
+(function(){const c=document.getElementById('sparks'),x=c.getContext('2d');let W,H,P=[];function rs(){W=c.width=c.offsetWidth*devicePixelRatio;H=c.height=c.offsetHeight*devicePixelRatio}rs();addEventListener('resize',rs);
+ for(let i=0;i<80;i++)P.push({x:Math.random(),y:Math.random(),r:Math.random()*2+.6,s:Math.random()*.0015+.0005,a:Math.random()*6});
+ (function f(){x.clearRect(0,0,W,H);P.forEach(p=>{p.y-=p.s;p.a+=.03;if(p.y<0){p.y=1;p.x=Math.random()}const al=.4+.6*Math.abs(Math.sin(p.a)),R=p.r*6*devicePixelRatio;
+  const g=x.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,R);g.addColorStop(0,`rgba(255,225,120,${al})`);g.addColorStop(1,'rgba(255,180,0,0)');x.fillStyle=g;x.beginPath();x.arc(p.x*W,p.y*H,R,0,7);x.fill()});requestAnimationFrame(f)})()})();
+addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('solid',scrollY>40));
+const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('on')),{threshold:.12});document.querySelectorAll('.reveal').forEach(e=>io.observe(e));
 </script>
-</body>
-</html>
+</body></html>
