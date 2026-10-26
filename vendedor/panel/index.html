@@ -64,17 +64,18 @@ function vInicio(){const ps=P(),hoy=new Date().toDateString();const cob=ps.filte
 function vPedidos(){const ps=P().slice().reverse();return`<h2>Pedidos</h2>`+(ps.map(p=>`<div class="box"><div class="rw"><b>${p.cod} · ${esc(p.cliente.nombre)}</b><span class="pill ${p.estado}">${p.estado}</span></div>
  <p class="mut" style="margin:6px 0">${p.items.map(i=>i.q+'× '+esc(i.n)).join(', ')}</p><p class="mut">📍 ${esc(p.cliente.dir)} · 📞 ${esc(p.cliente.tel)} · 💳 ${esc(p.pago)}${p.ref?' · 🤝 '+esc(p.ref):''} · ${hora(p.t)}</p>
  <div class="rw" style="margin-top:8px"><b class="gtxt" style="font-size:20px">${money(p.total)}</b></div>${vPago(p)}<div class="acts">
- ${p.estado==='nuevo'&&p.pagoEstado!=='por verificar'&&p.pagoEstado!=='rechazado'?`<button class="btn sm" onclick="est('${p.cod}','confirmado')">✅ Confirmar</button>`:''}${p.estado==='confirmado'?`<button class="btn sm" onclick="est('${p.cod}','entregado')">🚚 Entregado</button>`:''}${p.estado==='entregado'?`<button class="btn sm" onclick="est('${p.cod}','cobrado')">💰 Cobrado</button>`:''}
+ ${p.estado==='nuevo'?`<button class="btn sm" onclick="verif('${p.cod}',true)">✅ Aceptar pedido</button><button class="btn sm dark" onclick="verif('${p.cod}',false)">❌ Rechazar</button>`:''}${p.estado==='confirmado'?`<button class="btn sm" onclick="est('${p.cod}','entregado')">🚚 Entregado</button>`:''}${p.estado==='entregado'?`<button class="btn sm" onclick="est('${p.cod}','cobrado')">💰 Cobrado</button>`:''}
  <button class="btn sm dark" onclick="abrir('${p.cliente.id}')">💬 Chat</button></div></div>`).join('')||'<p class="mut">Aún no hay pedidos. Abre tu tienda en otra pestaña y haz uno de prueba.</p>')}
 function vPago(p){if(!p.pagoEstado)return'';
- if(p.pagoEstado==='contra entrega')return`<div class="vp">💵 <b>Efectivo</b> · ${esc(p.refPago||'')}</div>`;
+ const ef=/efectivo/i.test(p.pago),v=ef?N().vendedores.find(x=>x.cod===p.refPago):null;
  const cls=p.pagoEstado==='verificado'?'ok':p.pagoEstado==='rechazado'?'no':'';
- return`<div class="vp ${cls}"><div class="rw"><span>💳 ${esc(p.pago)} · Referencia</span><span class="pill ${cls?'':'nuevo'}">${p.pagoEstado==='verificado'?'pago verificado':p.pagoEstado}</span></div>
- <b class="refn">${esc(p.refPago)}</b>${p.pagoEstado==='por verificar'?`<p class="mut" style="margin:6px 0">Revisa en tu banco que llegó ${money(p.total)} con esta referencia.</p>
- <div class="acts" style="margin-top:6px"><button class="btn sm" onclick="verif('${p.cod}',true)">✅ Pago recibido · Aceptar pedido</button><button class="btn sm dark" onclick="verif('${p.cod}',false)">❌ No llegó</button></div>`:''}</div>`}
-function verif(cod,okp){const p=P().find(x=>x.cod===cod);
- if(okp){p.pagoEstado='verificado';p.estado='confirmado';save();enviar('negocio',p.cliente.id,`✅ Verificamos tu pago (Ref. ${p.refPago}). Tu pedido ${cod} está aceptado y en preparación.`,cod)}
- else{if(!confirm('¿Marcar que el pago no llegó? Se le avisará al cliente.'))return;p.pagoEstado='rechazado';save();enviar('negocio',p.cliente.id,`⚠️ No encontramos tu pago con la referencia ${p.refPago} para el pedido ${cod}. Revisa los datos y escríbenos por aquí.`,cod)}
+ const lbl=p.pagoEstado==='verificado'?(ef?'efectivo confirmado':'pago verificado'):p.pagoEstado;
+ return`<div class="vp ${cls}"><div class="rw"><span>${ef?'💵 Efectivo · entregado al promotor':'💳 '+esc(p.pago)+' · Referencia'}</span><span class="pill ${cls?'':'nuevo'}">${lbl}</span></div>
+ <b class="refn">${esc(ef?(v?v.n+' · '+v.cod:p.refPago):p.refPago)}</b>${p.pagoEstado==='por verificar'?`<p class="mut" style="margin:6px 0">${ef?`Confirma con ${esc(v?v.n:'el promotor')} que recibió ${money(p.total)} en efectivo.`:`Revisa en tu banco que llegó ${money(p.total)} con esta referencia.`}</p>`:''}</div>`}
+function verif(cod,okp){const p=P().find(x=>x.cod===cod),ef=/efectivo/i.test(p.pago);
+ if(okp){p.pagoEstado='verificado';p.estado='confirmado';save();enviar('negocio',p.cliente.id,`✅ ${ef?'Confirmamos tu pago en efectivo con el promotor':'Verificamos tu pago (Ref. '+p.refPago+')'}. Tu pedido ${cod} está aceptado y en preparación.`,cod)}
+ else{if(!confirm('¿Rechazar este pedido? Se le avisará al cliente.'))return;p.pagoEstado='rechazado';p.estado='rechazado';save();
+  enviar('negocio',p.cliente.id,`⚠️ No pudimos confirmar el pago de tu pedido ${cod} (${ef?'promotor '+p.refPago:'Ref. '+p.refPago}). Revisa los datos y escríbenos por aquí.`,cod)}
  markSeen();render()}
 function vMensajes(){if(chatWith){const ms=DB.mensajes.filter(m=>m.biz===BIZ&&(m.de===chatWith||m.para===chatWith));let c=false;ms.forEach(m=>{if(m.para==='negocio'&&!m.leido){m.leido=true;c=true}});if(c)localStorage.setItem(VA_KEY,JSON.stringify(DB));
   const cv=convs().find(x=>x.id===chatWith);return`<div class="rw" style="margin-bottom:12px"><button class="btn sm dark" onclick="chatWith=null;render()">← Volver</button><b>${esc(cv?cv.nom:'Cliente')}</b></div>
