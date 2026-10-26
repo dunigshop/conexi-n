@@ -11,26 +11,49 @@
 .kp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.k{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
 .k b{display:block;font-size:22px;font-weight:800}.k span{font-size:11px;color:var(--mut)}
 .rw{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
-.meta{height:12px;background:#22222b;border-radius:8px;overflow:hidden;margin:10px 0 4px}.meta div{height:100%;background:var(--gold);border-radius:8px;transition:1s}</style>
+.meta{height:12px;background:#22222b;border-radius:8px;overflow:hidden;margin:10px 0 4px}.qty{display:inline-flex;align-items:center;background:#1e1e26;border-radius:999px;padding:3px}.qty button{width:30px;height:30px;border-radius:50%;border:0;background:var(--gold);color:#1a1200;font-weight:800}
+.meta div{height:100%;background:var(--gold);border-radius:8px;transition:1s}</style>
 </head>
 <body><div class="c" id="root"></div>
 <script src="../core.js"></script>
 <script>
 let ses=sessionStorage.getItem('va_vend_'+BIZ);
 function login(){const c=$('#lC').value.trim().toUpperCase(),p=$('#lP').value.trim();if(N().vendedores.some(v=>v.cod===c&&v.pin===p)){ses=c;sessionStorage.setItem('va_vend_'+BIZ,c);render()}else toast('Código o PIN incorrecto')}
+let vd={};const vdTot=()=>N().productos.reduce((s,p)=>s+(vd[p.id]||0)*p.p,0);
+function vq(id,d){const keep={n:$('#dN')?.value,t:$('#dT')?.value,d:$('#dD')?.value};vd[id]=Math.max(0,(vd[id]||0)+d);render();if($('#dN')){$('#dN').value=keep.n||'';$('#dT').value=keep.t||'';$('#dD').value=keep.d||''}}
+function nuevoK(){let k;do{k=String(Math.floor(100000+Math.random()*900000))}while(DB.recibos.some(r=>r.biz===BIZ&&r.k===k));return k}
+function genCobro(){const m=Math.round(parseFloat($('#kM').value)*100)/100;if(!(m>0))return toast('Escribe el monto que recibiste');
+ const k=nuevoK();DB.recibos.push({biz:BIZ,prom:ses,k,monto:m,t:Date.now(),usado:null});save();markSeen();render();toast('Código '+k+' · dáselo al cliente')}
+function ventaDirecta(){const tot=vdTot(),nombre=$('#dN').value.trim(),tel=$('#dT').value.trim(),dir=$('#dD').value.trim();
+ if(!(tot>0))return toast('Agrega los productos vendidos');if(!nombre||!dir)return toast('Nombre y dirección del cliente');
+ if(!confirm('¿Confirmas que recibiste '+money(tot)+' en efectivo?'))return;
+ const n=N(),cod='#'+(1001+DB.pedidos.filter(p=>p.biz===BIZ).length),k=nuevoK();
+ DB.recibos.push({biz:BIZ,prom:ses,k,monto:tot,t:Date.now(),usado:cod});
+ DB.pedidos.push({cod,biz:BIZ,cliente:{id:'d'+Date.now(),nombre,tel,dir},items:n.productos.filter(p=>vd[p.id]).map(p=>({n:p.n,p:p.p,q:vd[p.id]})),total:tot,pago:'Efectivo',refPago:ses,recibo:k,directa:true,pagoEstado:'por verificar',ref:ses,estado:'nuevo',t:Date.now()});
+ vd={};save();markSeen();render();alert('Venta '+cod+' registrada. Comprobante para el cliente: '+k)}
 function render(){const n=N();if(!ses){$('#root').innerHTML=`<div style="text-align:center;margin:40px 0 20px"><div class="brand" style="justify-content:center"><i>🤝</i></div>
  <h1 style="font-size:30px;margin-top:14px">Vende y <span class="gtxt">gana</span></h1><p class="mut">Equipo de ${esc(n.nombre)} · demo: ANA01 / 1234</p></div>
  <div class="box"><label>Negocio</label><select onchange="location.href=BASE+'promotor/?n='+this.value">${Object.entries(DB.negocios).map(([k,v])=>`<option value="${k}" ${k===BIZ?'selected':''}>${esc(v.nombre)}</option>`).join('')}</select>
  <label>Código</label><input id="lC" placeholder="ANA01"><label>PIN</label><input id="lP" type="password" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')login()"><button class="btn full" onclick="login()">Entrar</button></div>`;return}
  const ps=DB.pedidos.filter(p=>p.biz===BIZ),r=n.vendedores.map(v=>{const c=ps.filter(p=>p.ref===v.cod&&p.estado==='cobrado');const ven=c.reduce((s,p)=>s+p.total,0);return{...v,cant:c.length,ven,com:ven*n.comision/100}}).sort((a,b)=>b.ven-a.ven);
+ const misRec=DB.recibos.filter(x=>x.biz===BIZ&&x.prom===ses).slice(-5).reverse(),caja=ps.filter(p=>p.ref===ses&&/efectivo/i.test(p.pago)&&p.pagoEstado==='verificado'&&!p.liquidado).reduce((s,p)=>s+p.total,0);
  const me=r.find(v=>v.cod===ses),pos=r.indexOf(me)+1,mis=ps.filter(p=>p.ref===ses).reverse(),meta=100,link=BASE+'tienda/?n='+BIZ+'&ref='+ses;
  $('#root').innerHTML=`<div class="rw" style="border:0"><h2>Hola, <span class="gtxt">${esc(me.n)}</span> 👋</h2><button class="btn sm dark" onclick="sessionStorage.removeItem('va_vend_'+BIZ);ses=null;render()">Salir</button></div>
  <div class="kp"><div class="k"><b class="gtxt">${money(me.com)}</b><span>Mi comisión</span></div><div class="k"><b>${me.cant}</b><span>Cobrados</span></div><div class="k"><b>#${pos}</b><span>Ranking</span></div></div>
+ <div class="box" style="border-color:rgba(255,210,63,.45)"><b>🏠 Venta casa por casa</b><p class="mut" style="margin:6px 0 10px">Registra aquí la venta cuando recibas el efectivo en mano.</p>
+ ${n.productos.map(p=>`<div class="rw"><span>${esc(p.n)} <span class="mut">${money(p.p)}</span></span><span class="qty" style="gap:8px"><button onclick="vq('${p.id}',-1)">−</button><b>${vd[p.id]||0}</b><button onclick="vq('${p.id}',1)">+</button></span></div>`).join('')}
+ <div class="rw" style="border:0"><b>Total recibido</b><b class="gtxt" style="font-size:20px">${money(vdTot())}</b></div>
+ <input id="dN" placeholder="Nombre del cliente"><input id="dT" placeholder="Teléfono del cliente" inputmode="tel"><input id="dD" placeholder="Dirección / casa">
+ <button class="btn full" onclick="ventaDirecta()">💵 Recibí ${money(vdTot())} · Registrar venta</button></div>
+ <div class="box"><b>🔑 Código de cobro</b><p class="mut" style="margin:6px 0 10px">Si el cliente prefiere hacer el pedido en la tienda, recibe el efectivo y genera un código. Sirve una sola vez, para ese monto, y vence en ${RECIBO_MIN} min.</p>
+ <div style="display:flex;gap:8px"><input id="kM" type="number" step="0.01" inputmode="decimal" placeholder="Monto recibido $" style="margin:0"><button class="btn" onclick="genCobro()">Generar</button></div>
+ ${misRec.length?misRec.map(r=>`<div class="rw"><span><b class="refn" style="font-family:monospace;font-size:18px;letter-spacing:2px">${r.k}</b> <span class="mut">${money(r.monto)} · ${hora(r.t)}</span></span><span class="pill ${r.usado?'entregado':Date.now()-r.t>RECIBO_MIN*60000?'rechazado':'nuevo'}">${r.usado?'usado '+r.usado:Date.now()-r.t>RECIBO_MIN*60000?'vencido':'activo'}</span></div>`).join(''):''}</div>
+ ${caja>0?`<div class="box"><b>💵 Efectivo que debes entregar al negocio</b><div class="rw" style="border:0"><span class="mut">Ventas en efectivo aceptadas</span><b class="gtxt" style="font-size:20px">${money(caja)}</b></div><p class="mut">Tu comisión: ${money(caja*n.comision/100)} · Entregas: ${money(caja*(1-n.comision/100))}</p></div>`:''}
  <div class="box"><b>Meta del mes</b><div class="meta"><div style="width:${Math.min(100,me.ven/meta*100)}%"></div></div><span class="mut">${money(me.ven)} de ${money(meta)} en ventas</span></div>
  <div class="box"><b>Mi enlace</b><p class="mut" style="margin:6px 0">Cada venta que entre por aquí se te asigna sola.</p><input readonly value="${link}" onclick="this.select()">
  <div style="display:flex;gap:8px"><button class="btn sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');toast('Enlace copiado')">Copiar</button>
  <a class="btn sm ghost" href="https://wa.me/?text=${encodeURIComponent('Mira esta tienda: '+link)}" target="_blank">Compartir</a></div></div>
  <div class="box"><b>Ranking del equipo</b>${r.map((v,i)=>`<div class="rw"><span>${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${esc(v.n)}${v.cod===ses?' (tú)':''}</span><b>${money(v.ven)}</b></div>`).join('')}</div>
  <div class="box"><b>Mis pedidos</b>${mis.map(p=>`<div class="rw"><span>${p.cod} · ${esc(p.cliente.nombre)}</span><span class="pill ${p.estado}">${p.estado}</span></div>`).join('')||'<p class="mut" style="margin-top:8px">Aún no tienes pedidos. ¡Comparte tu enlace!</p>'}</div>`}
-onNuevo=(ms,ps)=>{if(ses)ps.filter(p=>p.ref===ses).forEach(p=>notify('🎉 Venta con tu enlace',p.cod+' · '+money(p.total)))};onRender=render;render();
+onNuevo=(ms,ps)=>{if(ses)ps.filter(p=>p.ref===ses).forEach(p=>notify('🎉 Venta con tu enlace',p.cod+' · '+money(p.total)))};onRender=()=>{const a=document.activeElement;if(a&&a.tagName==="INPUT"&&a.value)return;render()};render();
 </script></body></html>
