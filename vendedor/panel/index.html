@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07070a"><meta name="robots" content="noindex">
+<title>Panel del negocio</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.json">
+<style>
+body{padding-bottom:80px;background:radial-gradient(circle at 80% -10%,rgba(255,190,0,.18),transparent 45%),var(--bg)}
+.bar{position:sticky;top:0;z-index:30;background:rgba(7,7,10,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:12px 0}
+.bar .wrap{display:flex;align-items:center;gap:10px}.bar .sp{flex:1}
+.bar select{width:auto;margin:0;padding:8px 10px;font-size:13px}
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(15,15,20,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex}
+.tabs button{flex:1;background:none;border:0;color:var(--mut);padding:9px 2px 11px;font:500 11px inherit;font-family:inherit;position:relative}
+.tabs button b{display:block;font-size:21px;margin-bottom:2px}.tabs button.on{color:var(--g2)}
+.tabs .bd{position:absolute;top:4px;left:calc(50% + 6px);background:var(--bad);color:#fff;font:700 10px/17px sans-serif;min-width:17px;height:17px;border-radius:9px;padding:0 4px}
+.tabs .bd:empty{display:none}
+main{padding-top:20px}
+h2{font-size:24px;font-weight:800;margin-bottom:16px}
+.kp{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}@media(min-width:700px){.kp{grid-template-columns:repeat(4,1fr)}}
+.k{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;position:relative;overflow:hidden}
+.k::after{content:'';position:absolute;width:120px;height:120px;right:-40px;top:-40px;border-radius:50%;background:radial-gradient(rgba(255,200,0,.25),transparent 70%);animation:bob 4s ease-in-out infinite}
+.k span{color:var(--mut);font-size:12px}.k b{display:block;font-size:26px;font-weight:800;margin-top:4px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px;animation:pop .3s ease}
+.rw{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.cv{display:flex;gap:12px;align-items:center;padding:14px;border-bottom:1px solid var(--line);cursor:pointer}
+.cv .av{width:44px;height:44px;border-radius:50%;background:var(--gold);color:#1a1200;display:grid;place-items:center;font-weight:800}
+.cv div{flex:1;min-width:0}.cv p{color:var(--mut);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatwrap{display:flex;flex-direction:column;height:calc(100vh - 220px);background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pr2{display:flex;gap:12px;align-items:center}.pr2 img{width:60px;height:60px;border-radius:12px;object-fit:cover}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login .box{max-width:360px;width:100%;text-align:center;padding:30px}
+.chart{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:10px}
+.chart div{flex:1;background:var(--gold);border-radius:8px 8px 0 0;min-height:4px;animation:grow 1s ease}
+@keyframes grow{from{height:0!important}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="../core.js"></script>
+<script>
+let tab=location.hash.slice(1)||'inicio',chatWith=null,ok=sessionStorage.getItem('va_panel_'+BIZ)==='1';
+function login(){if($('#pin').value===(N().pin||'0000')){sessionStorage.setItem('va_panel_'+BIZ,'1');ok=true;markSeen();render()}else toast('PIN incorrecto')}
+function vLogin(){return`<div class="login"><div class="box"><div class="brand" style="justify-content:center;margin-bottom:14px"><i>${N().emoji}</i></div>
+ <h2 style="margin-bottom:4px">Panel de <span class="gtxt">${esc(N().nombre)}</span></h2><p class="mut" style="margin-bottom:18px">Solo para el dueño del negocio · PIN demo: 0000</p>
+ <input id="pin" type="password" inputmode="numeric" placeholder="PIN" style="text-align:center;font-size:22px;letter-spacing:8px" onkeydown="if(event.key==='Enter')login()">
+ <button class="btn full" onclick="login()">Entrar</button></div></div>`}
+const P=()=>DB.pedidos.filter(p=>p.biz===BIZ);
+function convs(){const m=DB.mensajes.filter(x=>x.biz===BIZ);const ids=[...new Set(m.map(x=>x.de==='negocio'?x.para:x.de))];
+ return ids.map(id=>{const ms=m.filter(x=>x.de===id||x.para===id);const nom=(ms.find(x=>x.nom)||{}).nom||'Cliente';return{id,nom,ult:ms[ms.length-1],nl:ms.filter(x=>x.para==='negocio'&&!x.leido).length}}).sort((a,b)=>b.ult.t-a.ult.t)}
+function rank(){const n=N();return n.vendedores.map(v=>{const ps=P().filter(p=>p.ref===v.cod&&p.estado==='cobrado');const ventas=ps.reduce((s,p)=>s+p.total,0);return{...v,cant:ps.length,ventas,com:ventas*n.comision/100}}).sort((a,b)=>b.ventas-a.ventas)}
+const tiendaURL=()=>BASE+'tienda/?n='+BIZ;
+function vInicio(){const ps=P(),hoy=new Date().toDateString();const cob=ps.filter(p=>p.estado==='cobrado');
+ const hoyV=cob.filter(p=>new Date(p.t).toDateString()===hoy).reduce((s,p)=>s+p.total,0),tot=cob.reduce((s,p)=>s+p.total,0);
+ const dias=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return cob.filter(p=>new Date(p.t).toDateString()===d.toDateString()).reduce((s,p)=>s+p.total,0)});const mx=Math.max(...dias,1);
+ return`<h2>Hola 👋 <span class="gtxt">${esc(N().nombre)}</span></h2>
+ <div class="kp"><div class="k"><span>Cobrado hoy</span><b class="gtxt">${money(hoyV)}</b></div><div class="k"><span>Pedidos nuevos</span><b>${ps.filter(p=>p.estado==='nuevo').length}</b></div>
+ <div class="k"><span>Mensajes sin leer</span><b>${convs().reduce((s,c)=>s+c.nl,0)}</b></div><div class="k"><span>Total cobrado</span><b>${money(tot)}</b></div></div>
+ <div class="box"><b>Ventas últimos 7 días</b><div class="chart">${dias.map(v=>`<div style="height:${v/mx*100}%" title="${money(v)}"></div>`).join('')}</div></div>
+ <div class="box"><b>Tu tienda pública</b><p class="mut" style="margin:6px 0 10px">Comparte este enlace con tus clientes. Está separado de este panel.</p>
+ <input readonly value="${tiendaURL()}" onclick="this.select();navigator.clipboard&&navigator.clipboard.writeText(this.value);toast('Enlace copiado')"><a class="btn sm" href="${tiendaURL()}" target="_blank">Abrir tienda ↗</a></div>`}
+function vPedidos(){const ps=P().slice().reverse();return`<h2>Pedidos</h2>`+(ps.map(p=>`<div class="box"><div class="rw"><b>${p.cod} · ${esc(p.cliente.nombre)}</b><span class="pill ${p.estado}">${p.estado}</span></div>
+ <p class="mut" style="margin:6px 0">${p.items.map(i=>i.q+'× '+esc(i.n)).join(', ')}</p><p class="mut">📍 ${esc(p.cliente.dir)} · 📞 ${esc(p.cliente.tel)} · 💳 ${esc(p.pago)}${p.ref?' · 🤝 '+esc(p.ref):''} · ${hora(p.t)}</p>
+ <div class="rw" style="margin-top:8px"><b class="gtxt" style="font-size:20px">${money(p.total)}</b></div><div class="acts">
+ ${p.estado==='nuevo'?`<button class="btn sm" onclick="est('${p.cod}','confirmado')">✅ Confirmar</button>`:''}${p.estado==='confirmado'?`<button class="btn sm" onclick="est('${p.cod}','entregado')">🚚 Entregado</button>`:''}${p.estado==='entregado'?`<button class="btn sm" onclick="est('${p.cod}','cobrado')">💰 Cobrado</button>`:''}
+ <button class="btn sm dark" onclick="abrir('${p.cliente.id}')">💬 Chat</button></div></div>`).join('')||'<p class="mut">Aún no hay pedidos. Abre tu tienda en otra pestaña y haz uno de prueba.</p>')}
+function vMensajes(){if(chatWith){const ms=DB.mensajes.filter(m=>m.biz===BIZ&&(m.de===chatWith||m.para===chatWith));let c=false;ms.forEach(m=>{if(m.para==='negocio'&&!m.leido){m.leido=true;c=true}});if(c)localStorage.setItem(VA_KEY,JSON.stringify(DB));
+  const cv=convs().find(x=>x.id===chatWith);return`<div class="rw" style="margin-bottom:12px"><button class="btn sm dark" onclick="chatWith=null;render()">← Volver</button><b>${esc(cv?cv.nom:'Cliente')}</b></div>
+  <div class="chatwrap"><div class="msgs" id="msgs">${ms.map(m=>`<div class="m ${m.de==='negocio'?'yo':'el'}">${esc(m.texto)}<small>${hora(m.t)}${m.pedido?' · '+m.pedido:''}</small></div>`).join('')}</div>
+  <div class="send"><input id="txt" placeholder="Responder…" onkeydown="if(event.key==='Enter')resp()"><button class="btn" onclick="resp()">➤</button></div></div>`}
+ return`<h2>Mensajes</h2><div class="box" style="padding:0">${convs().map(c=>`<div class="cv" onclick="abrir('${c.id}')"><span class="av">${esc(c.nom[0]||'?').toUpperCase()}</span><div><b>${esc(c.nom)}</b><p>${esc(c.ult.texto)}</p></div>${c.nl?`<span class="pill nuevo">${c.nl}</span>`:`<span class="mut">${hora(c.ult.t)}</span>`}</div>`).join('')||'<p class="mut" style="padding:16px">Sin conversaciones todavía.</p>'}</div>`}
+function vProductos(){return`<h2>Productos</h2>`+N().productos.map(p=>`<div class="box"><div class="rw"><div class="pr2"><img src="${img(p.img)}"><div><b>${esc(p.n)}</b><br><span class="gtxt" style="font-weight:700">${money(p.p)}</span></div></div><button class="btn sm dark" onclick="delP('${p.id}')">🗑️</button></div></div>`).join('')+
+ `<div class="box"><b>Nuevo producto</b><br><br><label>Nombre</label><input id="pN"><label>Descripción corta</label><input id="pD"><label>Precio (USD)</label><input id="pP" type="number" step="0.01" inputmode="decimal">
+ <label>Foto</label><input id="pF" type="file" accept="image/*"><button class="btn full" onclick="addP()">Agregar producto</button></div>`}
+function vVendedores(){return`<h2>Vendedores</h2>`+rank().map((v,i)=>`<div class="box"><div class="rw"><b>${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${esc(v.n)} <span class="mut">${v.cod}</span></b><b class="gtxt">${money(v.com)}</b></div>
+ <p class="mut" style="margin:6px 0">${v.cant} pedidos cobrados · ventas ${money(v.ventas)} · comisión ${N().comision}%</p>
+ <input readonly value="${tiendaURL()}&ref=${v.cod}" onclick="this.select();navigator.clipboard&&navigator.clipboard.writeText(this.value);toast('Enlace copiado')"></div>`).join('')+
+ `<div class="box"><b>Agregar vendedor</b><br><br><input id="vN" placeholder="Nombre"><input id="vC" placeholder="Código (ej. PEDRO3)"><input id="vP" placeholder="PIN de 4 dígitos" inputmode="numeric" maxlength="4"><button class="btn full" onclick="addV()">Agregar</button>
+ <p class="mut" style="margin-top:10px">Tus vendedores entran en: ${BASE}promotor/</p></div>`}
+function vAjustes(){const n=N();return`<h2>Ajustes</h2><div class="box"><label>Nombre del negocio</label><input id="aN" value="${esc(n.nombre)}"><label>Frase de portada</label><input id="aL" value="${esc(n.lema)}">
+ <label>Comisión de vendedores (%)</label><input id="aC" type="number" value="${n.comision}"><label>Formas de pago (separadas por coma)</label><input id="aP" value="${esc(n.pagos.join(', '))}">
+ <label>PIN del panel</label><input id="aK" value="${esc(n.pin)}" inputmode="numeric" maxlength="6">
+ <label style="display:flex;gap:8px;align-items:center;margin:4px 0 14px"><input type="checkbox" style="width:auto;margin:0" ${DB.autoOff?'':'checked'} onchange="DB.autoOff=!this.checked;save()"> Respuesta automática de demo</label>
+ <button class="btn full" onclick="guardar()">Guardar</button></div>
+ <div class="box"><button class="btn full dark" onclick="permiso()">🔔 Activar notificaciones</button><br><br><button class="btn full dark" onclick="ding()">🔊 Probar sonido</button><br><br>
+ <button class="btn full dark" onclick="sessionStorage.removeItem('va_panel_'+BIZ);location.reload()">Cerrar sesión</button><br><br>
+ <button class="btn full dark" onclick="if(confirm('¿Borrar todos los datos de la demo?')){localStorage.removeItem(VA_KEY);localStorage.removeItem('va_cliente');location.reload()}">Reiniciar demo</button></div>`}
+function est(cod,e){const p=P().find(x=>x.cod===cod);p.estado=e;save();const t={confirmado:`Tu pedido ${cod} está confirmado ✅ Pronto va en camino.`,entregado:`Tu pedido ${cod} fue entregado. ¡Gracias por tu compra! 🙏`}[e];if(t)enviar('negocio',p.cliente.id,t,cod);markSeen();render()}
+function abrir(id){chatWith=id;go('mensajes')}
+function resp(){const t=$('#txt').value.trim();if(!t)return;enviar('negocio',chatWith,t);markSeen();render()}
+function delP(id){if(!confirm('¿Eliminar producto?'))return;N().productos=N().productos.filter(p=>p.id!==id);save();render()}
+function addP(){const n=$('#pN').value.trim(),p=parseFloat($('#pP').value),d=$('#pD').value.trim(),f=$('#pF').files[0];if(!n||!(p>0))return toast('Nombre y precio');
+ const fin=src=>{N().productos.push({id:'x'+Date.now(),n,d,p,img:src||'icon.png'});save();toast('Producto agregado');render()};
+ if(!f)return fin();const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(im.width,im.height);c.width=c.height=400;
+  c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,400,400);fin(c.toDataURL('image/jpeg',.72))};im.src=r.result};r.readAsDataURL(f)}
+function addV(){const n=$('#vN').value.trim(),c=$('#vC').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,''),pin=$('#vP').value.trim()||'1234';if(!n||!c)return toast('Nombre y código');
+ if(N().vendedores.some(v=>v.cod===c))return toast('Ese código ya existe');N().vendedores.push({cod:c,n,pin});save();render()}
+function guardar(){const n=N();n.nombre=$('#aN').value.trim()||n.nombre;n.lema=$('#aL').value.trim();n.comision=Math.max(0,parseFloat($('#aC').value)||0);
+ n.pagos=$('#aP').value.split(',').map(s=>s.trim()).filter(Boolean);n.pin=$('#aK').value.trim()||n.pin;save();toast('Guardado ✨');render()}
+function permiso(){if(!('Notification' in window))return toast('Este navegador no permite notificaciones');Notification.requestPermission().then(p=>toast(p==='granted'?'Notificaciones activadas 🔔':'Permiso no concedido'))}
+function go(t){tab=t;location.hash=t;if(t!=='mensajes'||!chatWith)scrollTo(0,0);render()}
+function render(){if(!ok){$('#root').innerHTML=vLogin();return}
+ const nl=convs().reduce((s,c)=>s+c.nl,0),nv=P().filter(p=>p.estado==='nuevo').length;
+ const keep=document.activeElement&&document.activeElement.id==='txt'?$('#txt').value:null,form=document.activeElement&&['pN','pD','pP','vN','vC','vP','aN','aL','aC','aP','aK'].includes(document.activeElement.id);
+ if(form)return; /* no interrumpir mientras escribe */
+ const T=(id,ic,t,b)=>`<button class="${tab===id?'on':''}" onclick="${id==='mensajes'?'chatWith=null;':''}go('${id}')"><b>${ic}</b>${t}<span class="bd">${b||''}</span></button>`;
+ $('#root').innerHTML=`<div class="bar"><div class="wrap"><span class="brand"><i>${N().emoji}</i><span style="font-size:15px">Panel</span></span><span class="sp"></span>
+ <select onchange="cambiar(this.value)">${Object.entries(DB.negocios).map(([k,v])=>`<option value="${k}" ${k===BIZ?'selected':''}>${v.nombre}</option>`).join('')}</select>
+ <a class="btn sm" href="${tiendaURL()}" target="_blank">Tienda ↗</a></div></div>
+ <main class="wrap">${({inicio:vInicio,pedidos:vPedidos,mensajes:vMensajes,productos:vProductos,vendedores:vVendedores,ajustes:vAjustes}[tab]||vInicio)()}</main>
+ <nav class="tabs">${T('inicio','🏠','Inicio')}${T('pedidos','🧾','Pedidos',nv)}${T('mensajes','💬','Chat',nl)}${T('productos','📦','Productos')}${T('vendedores','🤝','Equipo')}${T('ajustes','⚙️','Ajustes')}</nav>`;
+ const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight;if(keep!==null&&$('#txt')){$('#txt').value=keep;$('#txt').focus()}}
+function cambiar(b){location.href=BASE+'panel/?n='+b}
+onNuevo=(ms,ps)=>{if(!ok)return;ps.forEach(p=>notify('🧾 Nuevo pedido',p.cliente.nombre+' · '+money(p.total)));ms.filter(m=>m.para==='negocio'&&!(ps.length&&m.pedido)).forEach(m=>notify('💬 '+(m.nom||'Cliente'),m.texto))};
+onRender=render;
+addEventListener('hashchange',()=>{const t=location.hash.slice(1);if(t&&t!==tab){tab=t;render()}});
+render();
+</script>
+</body>
+</html>
