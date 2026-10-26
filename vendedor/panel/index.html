@@ -63,9 +63,19 @@ function vInicio(){const ps=P(),hoy=new Date().toDateString();const cob=ps.filte
  <input readonly value="${tiendaURL()}" onclick="this.select();navigator.clipboard&&navigator.clipboard.writeText(this.value);toast('Enlace copiado')"><a class="btn sm" href="${tiendaURL()}" target="_blank">Abrir tienda ↗</a></div>`}
 function vPedidos(){const ps=P().slice().reverse();return`<h2>Pedidos</h2>`+(ps.map(p=>`<div class="box"><div class="rw"><b>${p.cod} · ${esc(p.cliente.nombre)}</b><span class="pill ${p.estado}">${p.estado}</span></div>
  <p class="mut" style="margin:6px 0">${p.items.map(i=>i.q+'× '+esc(i.n)).join(', ')}</p><p class="mut">📍 ${esc(p.cliente.dir)} · 📞 ${esc(p.cliente.tel)} · 💳 ${esc(p.pago)}${p.ref?' · 🤝 '+esc(p.ref):''} · ${hora(p.t)}</p>
- <div class="rw" style="margin-top:8px"><b class="gtxt" style="font-size:20px">${money(p.total)}</b></div><div class="acts">
- ${p.estado==='nuevo'?`<button class="btn sm" onclick="est('${p.cod}','confirmado')">✅ Confirmar</button>`:''}${p.estado==='confirmado'?`<button class="btn sm" onclick="est('${p.cod}','entregado')">🚚 Entregado</button>`:''}${p.estado==='entregado'?`<button class="btn sm" onclick="est('${p.cod}','cobrado')">💰 Cobrado</button>`:''}
+ <div class="rw" style="margin-top:8px"><b class="gtxt" style="font-size:20px">${money(p.total)}</b></div>${vPago(p)}<div class="acts">
+ ${p.estado==='nuevo'&&p.pagoEstado!=='por verificar'&&p.pagoEstado!=='rechazado'?`<button class="btn sm" onclick="est('${p.cod}','confirmado')">✅ Confirmar</button>`:''}${p.estado==='confirmado'?`<button class="btn sm" onclick="est('${p.cod}','entregado')">🚚 Entregado</button>`:''}${p.estado==='entregado'?`<button class="btn sm" onclick="est('${p.cod}','cobrado')">💰 Cobrado</button>`:''}
  <button class="btn sm dark" onclick="abrir('${p.cliente.id}')">💬 Chat</button></div></div>`).join('')||'<p class="mut">Aún no hay pedidos. Abre tu tienda en otra pestaña y haz uno de prueba.</p>')}
+function vPago(p){if(!p.pagoEstado)return'';
+ if(p.pagoEstado==='contra entrega')return`<div class="vp">💵 <b>Efectivo</b> · ${esc(p.refPago||'')}</div>`;
+ const cls=p.pagoEstado==='verificado'?'ok':p.pagoEstado==='rechazado'?'no':'';
+ return`<div class="vp ${cls}"><div class="rw"><span>💳 ${esc(p.pago)} · Referencia</span><span class="pill ${cls?'':'nuevo'}">${p.pagoEstado==='verificado'?'pago verificado':p.pagoEstado}</span></div>
+ <b class="refn">${esc(p.refPago)}</b>${p.pagoEstado==='por verificar'?`<p class="mut" style="margin:6px 0">Revisa en tu banco que llegó ${money(p.total)} con esta referencia.</p>
+ <div class="acts" style="margin-top:6px"><button class="btn sm" onclick="verif('${p.cod}',true)">✅ Pago recibido · Aceptar pedido</button><button class="btn sm dark" onclick="verif('${p.cod}',false)">❌ No llegó</button></div>`:''}</div>`}
+function verif(cod,okp){const p=P().find(x=>x.cod===cod);
+ if(okp){p.pagoEstado='verificado';p.estado='confirmado';save();enviar('negocio',p.cliente.id,`✅ Verificamos tu pago (Ref. ${p.refPago}). Tu pedido ${cod} está aceptado y en preparación.`,cod)}
+ else{if(!confirm('¿Marcar que el pago no llegó? Se le avisará al cliente.'))return;p.pagoEstado='rechazado';save();enviar('negocio',p.cliente.id,`⚠️ No encontramos tu pago con la referencia ${p.refPago} para el pedido ${cod}. Revisa los datos y escríbenos por aquí.`,cod)}
+ markSeen();render()}
 function vMensajes(){if(chatWith){const ms=DB.mensajes.filter(m=>m.biz===BIZ&&(m.de===chatWith||m.para===chatWith));let c=false;ms.forEach(m=>{if(m.para==='negocio'&&!m.leido){m.leido=true;c=true}});if(c)localStorage.setItem(VA_KEY,JSON.stringify(DB));
   const cv=convs().find(x=>x.id===chatWith);return`<div class="rw" style="margin-bottom:12px"><button class="btn sm dark" onclick="chatWith=null;render()">← Volver</button><b>${esc(cv?cv.nom:'Cliente')}</b></div>
   <div class="chatwrap"><div class="msgs" id="msgs">${ms.map(m=>`<div class="m ${m.de==='negocio'?'yo':'el'}">${esc(m.texto)}<small>${hora(m.t)}${m.pedido?' · '+m.pedido:''}</small></div>`).join('')}</div>
@@ -80,10 +90,13 @@ function vVendedores(){return`<h2>Vendedores</h2>`+rank().map((v,i)=>`<div class
  `<div class="box"><b>Agregar vendedor</b><br><br><input id="vN" placeholder="Nombre"><input id="vC" placeholder="Código (ej. PEDRO3)"><input id="vP" placeholder="PIN de 4 dígitos" inputmode="numeric" maxlength="4"><button class="btn full" onclick="addV()">Agregar</button>
  <p class="mut" style="margin-top:10px">Tus vendedores entran en: ${BASE}promotor/</p></div>`}
 function vAjustes(){const n=N();return`<h2>Ajustes</h2><div class="box"><label>Nombre del negocio</label><input id="aN" value="${esc(n.nombre)}"><label>Frase de portada</label><input id="aL" value="${esc(n.lema)}">
- <label>Comisión de vendedores (%)</label><input id="aC" type="number" value="${n.comision}"><label>Formas de pago (separadas por coma)</label><input id="aP" value="${esc(n.pagos.join(', '))}">
+ <label>Comisión de vendedores (%)</label><input id="aC" type="number" value="${n.comision}">
  <label>PIN del panel</label><input id="aK" value="${esc(n.pin)}" inputmode="numeric" maxlength="6">
  <label style="display:flex;gap:8px;align-items:center;margin:4px 0 14px"><input type="checkbox" style="width:auto;margin:0" ${DB.autoOff?'':'checked'} onchange="DB.autoOff=!this.checked;save()"> Respuesta automática de demo</label>
  <button class="btn full" onclick="guardar()">Guardar</button></div>
+ <h2 style="margin-top:22px">Métodos de pago</h2><p class="mut" style="margin:-8px 0 12px">Estos datos le salen al cliente al elegir el método. Con Zelle, Pago Móvil o Binance se le pide el número de referencia.</p>
+ ${n.cuentas.map((c,i)=>`<div class="box"><div class="rw"><b>${esc(c.nombre)}</b><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" style="width:auto;margin:0" ${c.activo?'checked':''} onchange="N().cuentas[${i}].activo=this.checked;save()"> Activo</label></div>
+ ${c.id==='efectivo'?'<p class="mut" style="margin-top:6px">El cliente deja una nota y paga al recibir.</p>':Object.entries(c.campos).map(([k,v])=>`<label>${esc(k)}</label><input class="cf" data-i="${i}" data-k="${esc(k)}" value="${esc(v)}">`).join('')+`<button class="btn sm full" onclick="guardarCuenta(${i})">Guardar ${esc(c.nombre)}</button>`}</div>`).join('')}
  <div class="box"><button class="btn full dark" onclick="permiso()">🔔 Activar notificaciones</button><br><br><button class="btn full dark" onclick="ding()">🔊 Probar sonido</button><br><br>
  <button class="btn full dark" onclick="sessionStorage.removeItem('va_panel_'+BIZ);location.reload()">Cerrar sesión</button><br><br>
  <button class="btn full dark" onclick="if(confirm('¿Borrar todos los datos de la demo?')){localStorage.removeItem(VA_KEY);localStorage.removeItem('va_cliente');location.reload()}">Reiniciar demo</button></div>`}
@@ -98,12 +111,13 @@ function addP(){const n=$('#pN').value.trim(),p=parseFloat($('#pP').value),d=$('
 function addV(){const n=$('#vN').value.trim(),c=$('#vC').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,''),pin=$('#vP').value.trim()||'1234';if(!n||!c)return toast('Nombre y código');
  if(N().vendedores.some(v=>v.cod===c))return toast('Ese código ya existe');N().vendedores.push({cod:c,n,pin});save();render()}
 function guardar(){const n=N();n.nombre=$('#aN').value.trim()||n.nombre;n.lema=$('#aL').value.trim();n.comision=Math.max(0,parseFloat($('#aC').value)||0);
- n.pagos=$('#aP').value.split(',').map(s=>s.trim()).filter(Boolean);n.pin=$('#aK').value.trim()||n.pin;save();toast('Guardado ✨');render()}
+ n.pin=$('#aK').value.trim()||n.pin;save();toast('Guardado ✨');render()}
+function guardarCuenta(i){document.querySelectorAll('.cf[data-i="'+i+'"]').forEach(e=>N().cuentas[i].campos[e.dataset.k]=e.value.trim());save();toast('Datos de '+N().cuentas[i].nombre+' guardados')}
 function permiso(){if(!('Notification' in window))return toast('Este navegador no permite notificaciones');Notification.requestPermission().then(p=>toast(p==='granted'?'Notificaciones activadas 🔔':'Permiso no concedido'))}
 function go(t){tab=t;location.hash=t;if(t!=='mensajes'||!chatWith)scrollTo(0,0);render()}
 function render(){if(!ok){$('#root').innerHTML=vLogin();return}
  const nl=convs().reduce((s,c)=>s+c.nl,0),nv=P().filter(p=>p.estado==='nuevo').length;
- const keep=document.activeElement&&document.activeElement.id==='txt'?$('#txt').value:null,form=document.activeElement&&['pN','pD','pP','vN','vC','vP','aN','aL','aC','aP','aK'].includes(document.activeElement.id);
+ const keep=document.activeElement&&document.activeElement.id==='txt'?$('#txt').value:null,form=document.activeElement&&(['pN','pD','pP','vN','vC','vP','aN','aL','aC','aK'].includes(document.activeElement.id)||document.activeElement.classList.contains('cf'));
  if(form)return; /* no interrumpir mientras escribe */
  const T=(id,ic,t,b)=>`<button class="${tab===id?'on':''}" onclick="${id==='mensajes'?'chatWith=null;':''}go('${id}')"><b>${ic}</b>${t}<span class="bd">${b||''}</span></button>`;
  $('#root').innerHTML=`<div class="bar"><div class="wrap"><span class="brand"><i>${N().emoji}</i><span style="font-size:15px">Panel</span></span><span class="sp"></span>
