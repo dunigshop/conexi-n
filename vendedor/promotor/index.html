@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07070a"><meta name="robots" content="noindex">
+<title>App del vendedor</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<style>body{background:radial-gradient(circle at 20% -10%,rgba(255,190,0,.2),transparent 45%),var(--bg)}
+.c{max-width:520px;margin:0 auto;padding:30px 20px 60px}.box{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.kp{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.k{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.k b{display:block;font-size:22px;font-weight:800}.k span{font-size:11px;color:var(--mut)}
+.rw{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.meta{height:12px;background:#22222b;border-radius:8px;overflow:hidden;margin:10px 0 4px}.meta div{height:100%;background:var(--gold);border-radius:8px;transition:1s}</style>
+</head>
+<body><div class="c" id="root"></div>
+<script src="../core.js"></script>
+<script>
+let ses=sessionStorage.getItem('va_vend_'+BIZ);
+function login(){const c=$('#lC').value.trim().toUpperCase(),p=$('#lP').value.trim();if(N().vendedores.some(v=>v.cod===c&&v.pin===p)){ses=c;sessionStorage.setItem('va_vend_'+BIZ,c);render()}else toast('Código o PIN incorrecto')}
+function render(){const n=N();if(!ses){$('#root').innerHTML=`<div style="text-align:center;margin:40px 0 20px"><div class="brand" style="justify-content:center"><i>🤝</i></div>
+ <h1 style="font-size:30px;margin-top:14px">Vende y <span class="gtxt">gana</span></h1><p class="mut">Equipo de ${esc(n.nombre)} · demo: ANA01 / 1234</p></div>
+ <div class="box"><label>Negocio</label><select onchange="location.href=BASE+'promotor/?n='+this.value">${Object.entries(DB.negocios).map(([k,v])=>`<option value="${k}" ${k===BIZ?'selected':''}>${esc(v.nombre)}</option>`).join('')}</select>
+ <label>Código</label><input id="lC" placeholder="ANA01"><label>PIN</label><input id="lP" type="password" inputmode="numeric" placeholder="••••" onkeydown="if(event.key==='Enter')login()"><button class="btn full" onclick="login()">Entrar</button></div>`;return}
+ const ps=DB.pedidos.filter(p=>p.biz===BIZ),r=n.vendedores.map(v=>{const c=ps.filter(p=>p.ref===v.cod&&p.estado==='cobrado');const ven=c.reduce((s,p)=>s+p.total,0);return{...v,cant:c.length,ven,com:ven*n.comision/100}}).sort((a,b)=>b.ven-a.ven);
+ const me=r.find(v=>v.cod===ses),pos=r.indexOf(me)+1,mis=ps.filter(p=>p.ref===ses).reverse(),meta=100,link=BASE+'tienda/?n='+BIZ+'&ref='+ses;
+ $('#root').innerHTML=`<div class="rw" style="border:0"><h2>Hola, <span class="gtxt">${esc(me.n)}</span> 👋</h2><button class="btn sm dark" onclick="sessionStorage.removeItem('va_vend_'+BIZ);ses=null;render()">Salir</button></div>
+ <div class="kp"><div class="k"><b class="gtxt">${money(me.com)}</b><span>Mi comisión</span></div><div class="k"><b>${me.cant}</b><span>Cobrados</span></div><div class="k"><b>#${pos}</b><span>Ranking</span></div></div>
+ <div class="box"><b>Meta del mes</b><div class="meta"><div style="width:${Math.min(100,me.ven/meta*100)}%"></div></div><span class="mut">${money(me.ven)} de ${money(meta)} en ventas</span></div>
+ <div class="box"><b>Mi enlace</b><p class="mut" style="margin:6px 0">Cada venta que entre por aquí se te asigna sola.</p><input readonly value="${link}" onclick="this.select()">
+ <div style="display:flex;gap:8px"><button class="btn sm" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');toast('Enlace copiado')">Copiar</button>
+ <a class="btn sm ghost" href="https://wa.me/?text=${encodeURIComponent('Mira esta tienda: '+link)}" target="_blank">Compartir</a></div></div>
+ <div class="box"><b>Ranking del equipo</b>${r.map((v,i)=>`<div class="rw"><span>${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${esc(v.n)}${v.cod===ses?' (tú)':''}</span><b>${money(v.ven)}</b></div>`).join('')}</div>
+ <div class="box"><b>Mis pedidos</b>${mis.map(p=>`<div class="rw"><span>${p.cod} · ${esc(p.cliente.nombre)}</span><span class="pill ${p.estado}">${p.estado}</span></div>`).join('')||'<p class="mut" style="margin-top:8px">Aún no tienes pedidos. ¡Comparte tu enlace!</p>'}</div>`}
+onNuevo=(ms,ps)=>{if(ses)ps.filter(p=>p.ref===ses).forEach(p=>notify('🎉 Venta con tu enlace',p.cod+' · '+money(p.total)))};onRender=render;render();
+</script></body></html>
