@@ -1,0 +1,40 @@
+@font-face{font-family:Playfair;src:url(fonts/Playfair.ttf);font-weight:400 900}
+@font-face{font-family:Playfair;src:url(fonts/PlayfairItalic.ttf);font-weight:400 900;font-style:italic}
+@font-face{font-family:Poppins;src:url(fonts/Poppins-Regular.ttf);font-weight:400}
+@font-face{font-family:Poppins;src:url(fonts/Poppins-Medium.ttf);font-weight:500}
+@font-face{font-family:Poppins;src:url(fonts/Poppins-SemiBold.ttf);font-weight:600}
+@font-face{font-family:Poppins;src:url(fonts/Poppins-Bold.ttf);font-weight:700}
+@font-face{font-family:Poppins;src:url(fonts/Poppins-ExtraBold.ttf);font-weight:800}
+:root{--bg:#07070a;--bg2:#0e0d12;--card:rgba(22,20,26,.72);--line:rgba(212,175,55,.28);--line2:rgba(247,231,161,.55);
+--txt:#fbf8ef;--mut:#b3ab9a;--g1:#f7e7a1;--g2:#d4af37;--g3:#8a6a1f;
+--gold:linear-gradient(110deg,#c8992e 0%,#e2bf55 14%,#f7e7a1 30%,#d4af37 46%,#fff4c4 58%,#e0b84a 72%,#c39530 88%,#c8992e 100%);
+--goldv:linear-gradient(180deg,#fff4c4 0%,#f7e7a1 22%,#d4af37 58%,#8a6a1f 100%)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg)}
+body{font-family:Poppins,"DejaVu Sans",sans-serif;color:var(--txt);overflow-x:hidden;-webkit-font-smoothing:antialiased;
+background:radial-gradient(120% 60% at 50% 0%,#1d1608 0%,#0b0a0d 45%,#07070a 100%) fixed}
+.serif{font-family:Playfair,"DejaVu Serif",serif}
+.gtxt{background:var(--gold);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 3.2s linear infinite}
+@keyframes shine{from{background-position:0% center}to{background-position:250% center}}
+.gbtn{border:0;cursor:pointer;font-family:inherit;font-weight:700;color:#1a1200;background:var(--gold);background-size:250% auto;animation:shine 3.2s linear infinite;
+box-shadow:0 6px 24px rgba(212,175,55,.38),inset 0 1px 0 rgba(255,255,255,.5);position:relative;overflow:hidden}
+.gbtn::after{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent);transform:skewX(-20deg);animation:sheen 2.6s ease-in-out infinite}
+@keyframes sheen{0%{left:-60%}55%,100%{left:130%}}
+.glass{background:var(--card);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.45),inset 0 1px 0 rgba(247,231,161,.08)}
+.kb{animation:kb 9s ease-in-out infinite alternate;transform-origin:50% 50%}
+.kb2{animation:kb2 11s ease-in-out infinite alternate}
+@keyframes kb{0%{transform:scale(1.02) translate(0,0)}100%{transform:scale(1.2) translate(-4%,-3%)}}
+@keyframes kb2{0%{transform:scale(1.18) translate(3%,2%)}100%{transform:scale(1.03) translate(-2%,-1%)}}
+.ph{overflow:hidden;position:relative}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(7,7,10,.55));pointer-events:none}
+.kick{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.45);color:var(--g1);font-size:10.5px;font-weight:600;letter-spacing:1.6px}
+.kick b{width:7px;height:7px;border-radius:50%;background:#2ee59d;box-shadow:0 0 8px #2ee59d;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.hairline{height:1px;background:linear-gradient(90deg,transparent,var(--g2),transparent);opacity:.7}
+#sparks{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.rise{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+input{outline:none}
+input::placeholder{color:#7d766a}
+*{scrollbar-width:none}::-webkit-scrollbar{display:none}
