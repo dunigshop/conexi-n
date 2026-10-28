@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es-VE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿A cuánto vendo mi torta? · Calculadora para reposteras</title>
+<meta name="description" content="Calcula el precio de venta de tus tortas: costos, margen de ganancia y precio por porción.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0906">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="nucleo.js"></script>
+<style>
+:root{--bg:#0b0906;--card:#15110b;--line:rgba(212,175,55,.28);--line2:rgba(212,175,55,.6);--gold:#d4af37;--gold2:#f3d97a;--goldg:linear-gradient(135deg,#f7e48c 0%,#d4af37 48%,#a9851f 100%);--txt:#f5edd9;--mut:#a99d82}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{color:var(--txt);font-family:'Poppins',system-ui,sans-serif;font-size:15px;line-height:1.45;max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:40px;
+  background:radial-gradient(120% 40% at 50% 0%,rgba(212,175,55,.10),transparent 60%),var(--bg)}
+.serif{font-family:'Playfair Display',Georgia,serif}
+.gold{background:var(--goldg);-webkit-background-clip:text;background-clip:text;color:transparent}
+button,input{font-family:inherit}
+button{cursor:pointer}
+img{display:block}
+input:focus{outline:none;border-color:var(--gold)!important}
+.hero{position:relative;height:200px;overflow:hidden;border-radius:0 0 26px 26px}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 40%;filter:brightness(.55)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,9,6,.15),var(--bg) 100%)}
+.hero-in{position:absolute;left:18px;right:18px;bottom:16px;z-index:2}
+.pill{display:inline-flex;gap:6px;align-items:center;padding:5px 12px;border-radius:999px;font-size:11.5px;font-weight:600;background:rgba(11,9,6,.6);border:1px solid var(--line2);color:var(--gold2)}
+.hero h1{font-size:30px;line-height:1.08;font-weight:800;margin-top:10px}
+.hero h1 em{font-style:italic;font-weight:600}
+.hero p{font-size:12.5px;color:#d8ceb4;margin-top:4px}
+.wrap{padding:0 16px}
+.card{border:1px solid var(--line);border-radius:20px;background:var(--card);padding:16px;margin-top:14px}
+.card h2{font-size:19px;display:flex;align-items:center;justify-content:space-between}
+.card h2 small{font-family:'Poppins';font-size:12px;color:var(--mut);font-weight:400}
+.lbl{display:block;font-size:12px;color:var(--mut);margin:0 0 6px 4px}
+.inp{width:100%;background:#0f0c08;border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--txt);font-size:15px}
+.ing{display:flex;gap:8px;align-items:center;margin-top:8px}
+.ing .nm{flex:1;min-width:0;background:#0f0c08;border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--txt);font-size:14px}
+.ing .cw{position:relative;flex:0 0 92px}
+.ing .cw span{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gold);font-size:13px;pointer-events:none}
+.ing .cw input{width:100%;background:#0f0c08;border:1px solid var(--line);border-radius:12px;padding:10px 8px 10px 24px;color:var(--gold2);font-size:14px;font-weight:600;text-align:right}
+.ing .rm{flex:0 0 34px;height:34px;border-radius:50%;border:1px solid rgba(212,175,55,.25);background:transparent;color:#b98f8f;font-size:18px;line-height:1}
+.add{margin-top:12px;width:100%;border:1px dashed var(--line2);background:rgba(212,175,55,.05);color:var(--gold2);border-radius:14px;padding:11px;font-size:14px;font-weight:600}
+.subt{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px dashed rgba(212,175,55,.25);font-size:14px;color:var(--mut)}
+.subt b{color:var(--txt)}
+.mrg{display:flex;justify-content:space-between;align-items:baseline}
+.mrg b{font-family:'Playfair Display',serif;font-size:30px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;margin:14px 0 6px;background:linear-gradient(90deg,#d4af37 var(--p,40%),#2a2114 var(--p,40%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--goldg);border:3px solid #0b0906;box-shadow:0 0 0 1px var(--gold),0 4px 12px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#d4af37;border:3px solid #0b0906}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+.presets{display:flex;gap:6px;margin-top:10px}
+.presets button{flex:1;border:1px solid var(--line);background:transparent;color:var(--txt);border-radius:999px;padding:6px 0;font-size:12px}
+.presets button.on{border-color:var(--gold);color:var(--gold2);background:rgba(212,175,55,.12)}
+.stepper{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.stepper button{width:46px;height:46px;border-radius:50%;border:1px solid var(--line2);background:#1c150c;color:var(--gold2);font-size:22px}
+.stepper .v{text-align:center}
+.stepper .v b{font-family:'Playfair Display',serif;font-size:34px;display:block;line-height:1}
+.stepper .v small{color:var(--mut);font-size:12px}
+.result{margin-top:16px;border-radius:24px;padding:20px 18px;text-align:center;background:radial-gradient(120% 90% at 50% 0%,rgba(247,228,140,.18),transparent 60%),linear-gradient(160deg,#1d160b,#0f0b06);border:1.5px solid var(--gold);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.result .k{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2)}
+.result .big{font-family:'Playfair Display',serif;font-size:56px;font-weight:800;line-height:1.05;margin:6px 0 2px}
+.result .per{font-size:13px;color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:10px 6px;background:rgba(11,9,6,.55)}
+.stat small{display:block;font-size:10.5px;color:var(--mut);line-height:1.25}
+.stat b{font-size:16px;display:block;margin-top:4px}
+.stat.g b{color:var(--gold2)}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btn{flex:1;border:0;border-radius:999px;background:var(--goldg);color:#1b1305;padding:14px 10px;font-size:14.5px;font-weight:700;display:flex;gap:7px;align-items:center;justify-content:center}
+.btn.ghost{background:transparent;color:var(--gold2);border:1px solid var(--line2)}
+.btn svg{width:18px;height:18px}
+.saved .it{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed rgba(212,175,55,.18)}
+.saved .it:last-child{border-bottom:0}
+.saved .it .t{flex:1;min-width:0}
+.saved .it .t b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.saved .it .t small{color:var(--mut);font-size:12px}
+.saved .it button{border:1px solid var(--line2);background:transparent;color:var(--gold2);border-radius:999px;padding:6px 12px;font-size:12px}
+.saved .it button.d{border-color:rgba(212,175,55,.2);color:#b98f8f;padding:6px 10px}
+.saved .none{color:var(--mut);font-size:13px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);opacity:0;background:var(--goldg);color:#1b1305;font-weight:600;font-size:13.5px;padding:10px 18px;border-radius:999px;transition:.3s;z-index:90;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.tip{font-size:12px;color:var(--mut);margin-top:10px;text-align:center}
+.foot{text-align:center;color:#6f664f;font-size:11.5px;margin:26px 0 0}
+.acct{display:flex;gap:10px;align-items:center;border:1px solid var(--line2);border-radius:18px;padding:12px 14px;margin-top:14px;background:linear-gradient(160deg,#1a140b,#100c07);font-size:13px}
+.acct .tx{flex:1;min-width:0;color:#d9cfb6}.acct .tx b{color:var(--gold2)}
+.acct a{flex:0 0 auto;text-decoration:none;border-radius:999px;background:var(--goldg);color:#1b1305;font-weight:700;padding:8px 14px;font-size:12.5px}
+.ingc{border-bottom:1px dashed rgba(212,175,55,.16);padding:8px 0}
+.ingc:last-child{border-bottom:0}
+.ingc .ing{margin-top:0}
+.ingc .q{display:flex;gap:8px;align-items:center;margin-top:6px;padding-left:2px;font-size:12px;color:var(--mut)}
+.ingc .q input{width:84px;background:#0f0c08;border:1px solid var(--line);border-radius:10px;padding:7px 8px;color:var(--txt);font-size:14px;text-align:right}
+.ingc .q .lk{color:var(--gold2)}
+.ing .cw input[readonly]{color:var(--gold2);background:#140f08;border-style:dashed}
+.foot a{color:#8d8165}
+</style>
+</head>
+<body>
+<header class="hero">
+  <img id="heroImg" alt="Torta de chocolate">
+  <div class="hero-in">
+    <span class="pill" id="brand">🎂 Calculadora para reposteras</span>
+    <h1 class="serif">¿A cuánto vendo <em class="gold">mi torta?</em></h1>
+    <p>Suma tus costos, elige tu ganancia y obtén el precio justo por porción.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="acct" id="acct"></div>
+  <section class="card">
+    <label class="lbl" for="rname">Nombre de la receta</label>
+    <input class="inp" id="rname" placeholder="Ej: Torta tres leches">
+  </section>
+
+  <section class="card">
+    <h2 class="serif">Ingredientes y costos <small id="ingCount"></small></h2>
+    <div id="ings"></div>
+    <datalist id="lib"></datalist>
+    <button class="add" id="addIng">+ Agregar ingrediente</button>
+    <div class="subt"><span>Costo total de la torta</span><b id="subt">$0.00</b></div>
+  </section>
+
+  <section class="card">
+    <div class="mrg"><h2 class="serif">Margen de ganancia</h2><b class="gold" id="mv">60%</b></div>
+    <input type="range" id="margin" min="0" max="150" step="5" aria-label="Margen de ganancia">
+    <div class="ticks"><span>0%</span><span>50%</span><span>100%</span><span id="maxT">150%</span></div>
+    <div class="presets" id="presets"><button data-v="30">30%</button><button data-v="50">50%</button><button data-v="80">80%</button><button data-v="100">100%</button></div>
+  </section>
+
+  <section class="card">
+    <h2 class="serif">Porciones</h2>
+    <div class="stepper"><button id="pm" aria-label="Menos porciones">−</button><div class="v"><b id="pv">12</b><small>porciones por torta</small></div><button id="pp" aria-label="Más porciones">+</button></div>
+  </section>
+
+  <section class="result">
+    <div class="k">Precio sugerido por porción</div>
+    <div class="big gold" id="perPortion">$0.00</div>
+    <div class="per" id="perCost">Costo por porción: $0.00</div>
+    <div class="stats">
+      <div class="stat"><small>Costo total</small><b id="sCost">$0</b></div>
+      <div class="stat g"><small>Ganancia por torta</small><b id="sProfit">$0</b></div>
+      <div class="stat"><small>Precio total de la torta</small><b id="sTotal">$0</b></div>
+    </div>
+    <div class="btns">
+      <button class="btn ghost" id="save">💾 Guardar</button>
+      <button class="btn" id="share"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.6-.1 1.2Z"/></svg>Compartir</button>
+    </div>
+  </section>
+  <p class="tip">💡 Escribe un ingrediente de tu lista para que el costo se calcule solo por cantidad. Incluye empaque, gas, luz y tu tiempo.</p>
+
+  <section class="card saved">
+    <h2 class="serif">Mis recetas guardadas <small id="savedN"></small></h2>
+    <div id="savedList"></div>
+    <button class="add" id="newR" style="margin-top:12px">+ Nueva receta en blanco</button>
+  </section>
+  <p class="foot">Calculadora para reposteras · Demo</p>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(async function(){
+  const N = Nucleo, A = N.APP, K = A.calc, $ = N.$, esc = N.esc;
+  N.bannerDemo();
+  // Sin sesión: la calculadora funciona con datos de ejemplo guardados en este teléfono.
+  const GK = { ing: "rep_invitado_ing", rec: "rep_invitado_recetas", draft: "rep_borrador" };
+  const leerL = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k) || "null"); return v == null ? def : v; } catch(e) { return def; } };
+  let db = null, user = null;
+  try { db = await N.listo(); user = await db.auth.user(); } catch(e) { db = null; user = null; }
+  const nube = !!user;
+  let ING = [], RECS = [], S = {};
+  const clone = x => JSON.parse(JSON.stringify(x));
+
+  async function cargar(){
+    if (nube) {
+      const [g, r, a] = await Promise.all([
+        db.select("rep_ingredientes", { order: [["nombre"]] }),
+        db.select("rep_recetas", { order: [["actualizado", false]] }),
+        db.select("rep_ajustes", { limit: 1 })
+      ]);
+      ING = g; RECS = r; S = Object.assign({}, A.defaults.ajustes, (a[0] && a[0].datos) || {});
+    } else {
+      ING = leerL(GK.ing, clone(A.defaults.ingredientes)); RECS = leerL(GK.rec, []); S = clone(A.defaults.ajustes);
+    }
+  }
+  try { await cargar(); } catch(e) { N.toast("⚠️ " + e.message, 5000); ING = clone(A.defaults.ingredientes); S = clone(A.defaults.ajustes); }
+  const C = () => S.moneda || "$";
+  const money = n => C() + (isFinite(n) ? n : 0).toFixed(2);
+  const MAXM = 150;
+
+  const fresh = () => { const d = clone(A.defaults.receta); d.id = null; d.margen = Number(S.margen) || d.margen; d.porciones = Number(S.porciones) || d.porciones; return d; };
+  let r = null;
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("receta")) r = clone(RECS.find(x => x.id === qs.get("receta")) || null);
+  if (!r && qs.get("nueva")) r = { id: null, nombre: "", items: [{ ing: null, nombre: "", costo: 0 }], margen: Number(S.margen) || 60, porciones: Number(S.porciones) || 12 };
+  if (!r) r = leerL(GK.draft + (nube ? "_" + user.id : ""), null) || fresh();
+  if (qs.get("receta") || qs.get("nueva")) history.replaceState(null, "", location.pathname);
+
+  $("#heroImg").src = N.img("img/torta.webp");
+  $("#margin").max = MAXM; $("#maxT").textContent = MAXM + "%";
+  if (S.negocio) $("#brand").textContent = "🎂 " + S.negocio;
+
+  // Tarjeta de cuenta
+  $("#acct").innerHTML = nube && db.modo === "demo"
+    ? `<div class="tx">🧪 Sesión demo (<b>${esc(user.email)}</b>): tus ingredientes y recetas se guardan en este teléfono.</div>`
+    : nube
+    ? `<div class="tx">☁️ Guardando en tu cuenta <b>${esc(user.email)}</b>. Cambia un precio en tus ingredientes y todas tus recetas se recalculan.</div>`
+    : N.MODE === "none"
+      ? `<div class="tx">Calculadora lista para usar. Tus recetas se guardan en este teléfono.</div>`
+      : `<div class="tx">🧪 Demo: tus ingredientes y recetas se guardan solo en este teléfono. En la versión completa se guardan en tu cuenta.</div>`;
+
+  const libPor = nombre => ING.find(g => g.nombre.trim().toLowerCase() === String(nombre || "").trim().toLowerCase());
+  function renderLib(){ $("#lib").innerHTML = ING.map(g => `<option value="${esc(g.nombre)}">`).join(""); }
+
+  function renderIngs(){
+    const box = $("#ings");
+    box.innerHTML = r.items.map((it, k) => {
+      const g = it.ing && ING.find(x => x.id === it.ing);
+      const costo = K.costoItem(it, ING);
+      return `<div class="ingc"><div class="ing">
+        <input class="nm" data-k="${k}" data-f="nombre" value="${esc(it.nombre)}" placeholder="Ingrediente" list="lib" autocomplete="off">
+        <div class="cw"><span>${esc(C())}</span><input data-k="${k}" data-f="costo" type="number" inputmode="decimal" min="0" step="0.05" value="${costo ? costo.toFixed(2) : ""}" placeholder="0.00" ${g ? "readonly tabindex=-1" : ""}></div>
+        <button class="rm" data-rm="${k}" aria-label="Eliminar ${esc(it.nombre)}">×</button></div>
+        ${g ? `<div class="q"><span>Cantidad</span><input data-k="${k}" data-f="cant" type="number" inputmode="decimal" min="0" step="any" value="${it.cant == null ? "" : it.cant}"><span>${esc(g.unidad)}</span><span class="lk">· ${money(Number(g.precio))} por ${esc(String(g.cantidad))} ${esc(g.unidad)}</span></div>` : ""}
+      </div>`;
+    }).join("");
+    box.querySelectorAll("input").forEach(inp => inp.addEventListener("input", e => {
+      const k = +e.target.dataset.k, f = e.target.dataset.f, it = r.items[k];
+      if (f === "nombre") {
+        it.nombre = e.target.value; const g = libPor(it.nombre);
+        const antes = it.ing; it.ing = g ? g.id : null;
+        if (g && !antes) { it.cant = it.cant || (g.unidad === "und" ? 1 : 100); delete it.costo; }
+        if (!g && antes) { it.costo = 0; delete it.cant; }
+        if (!!antes !== !!g || (g && antes !== g.id)) { renderIngs(); const el = $(`#ings input[data-k="${k}"][data-f="nombre"]`); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }
+      } else if (f === "cant") it.cant = parseFloat(e.target.value.replace(",", ".")) || 0;
+      else it.costo = parseFloat(e.target.value.replace(",", ".")) || 0;
+      if (f === "cant") { const c = K.costoItem(it, ING), ci = $(`#ings input[data-k="${k}"][data-f="costo"]`); if (ci) ci.value = c ? c.toFixed(2) : ""; }
+      calc();
+    }));
+    box.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { r.items.splice(+b.dataset.rm, 1); renderIngs(); calc(); });
+    $("#ingCount").textContent = r.items.length + " items";
+  }
+
+  function calc(){
+    const n = K.numeros(r, ING, S.redondeo);
+    $("#subt").textContent = money(n.cost);
+    $("#mv").textContent = r.margen + "%";
+    const m = $("#margin"); m.value = r.margen; m.style.setProperty("--p", (Math.min(r.margen, MAXM) / MAXM * 100) + "%");
+    $("#presets").querySelectorAll("button").forEach(b => b.classList.toggle("on", +b.dataset.v === +r.margen));
+    $("#pv").textContent = r.porciones;
+    $("#perPortion").textContent = money(n.per);
+    $("#perCost").textContent = "Costo por porción: " + money(n.perCost);
+    $("#sCost").textContent = money(n.cost);
+    $("#sProfit").textContent = money(n.profit);
+    $("#sTotal").textContent = money(n.total);
+    try { localStorage.setItem(GK.draft + (nube ? "_" + user.id : ""), JSON.stringify(r)); } catch(e) {}
+  }
+
+  function renderSaved(){
+    const box = $("#savedList");
+    $("#savedN").textContent = RECS.length ? RECS.length + "" : "";
+    if (!RECS.length) { box.innerHTML = `<p class="none">Aún no has guardado recetas. Toca “Guardar” para tenerlas siempre a mano.</p>`; return; }
+    box.innerHTML = RECS.map(x => { const n = K.numeros(x, ING, S.redondeo);
+      return `<div class="it"><div class="t"><b>${esc(x.nombre)}</b><small>${x.porciones} porciones · ${x.margen}% · ${money(n.per)} c/u</small></div>
+        <button data-open="${x.id}">Abrir</button><button class="d" data-del="${x.id}" aria-label="Borrar">🗑</button></div>`; }).join("");
+    box.querySelectorAll("[data-open]").forEach(b => b.onclick = () => { const x = RECS.find(y => y.id === b.dataset.open); if (x) { r = clone(x); load(); window.scrollTo({top:0, behavior:"smooth"}); toast("Receta abierta"); } });
+    box.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+      if (!confirm("¿Borrar esta receta?")) return;
+      try { if (nube) await db.remove("rep_recetas", { id: b.dataset.del }); RECS = RECS.filter(y => y.id !== b.dataset.del); if (!nube) localStorage.setItem(GK.rec, JSON.stringify(RECS)); if (r.id === b.dataset.del) r.id = null; renderSaved(); toast("Receta eliminada"); }
+      catch(e) { toast("⚠️ " + e.message); }
+    });
+  }
+  const toast = t => N.toast(t, 1800);
+  function load(){ $("#rname").value = r.nombre || ""; renderLib(); renderIngs(); calc(); }
+
+  $("#rname").addEventListener("input", e => { r.nombre = e.target.value; calc(); });
+  $("#addIng").onclick = () => { r.items.push({ ing: null, nombre: "", costo: 0 }); renderIngs(); calc(); const ins = $("#ings").querySelectorAll(".nm"); ins[ins.length-1].focus(); };
+  $("#margin").addEventListener("input", e => { r.margen = +e.target.value; calc(); });
+  $("#presets").querySelectorAll("button").forEach(b => b.onclick = () => { r.margen = +b.dataset.v; calc(); });
+  $("#pm").onclick = () => { r.porciones = Math.max(1, r.porciones - 1); calc(); };
+  $("#pp").onclick = () => { r.porciones = Math.min(200, r.porciones + 1); calc(); };
+  $("#save").onclick = async () => {
+    if (!String(r.nombre || "").trim()) r.nombre = "Mi receta";
+    if (!r.id) r.id = N.uid();
+    const row = { id: r.id, nombre: r.nombre.trim().slice(0, 80), items: r.items.filter(i => i.nombre || i.costo || i.ing).map(i => i.ing ? { ing: i.ing, nombre: i.nombre, cant: Number(i.cant) || 0 } : { ing: null, nombre: i.nombre, costo: Number(i.costo) || 0 }), margen: r.margen, porciones: r.porciones, actualizado: new Date().toISOString() };
+    const b = $("#save"); b.disabled = true;
+    try {
+      if (nube) await db.upsert("rep_recetas", Object.assign({ user_id: user.id }, row));
+      const i = RECS.findIndex(x => x.id === r.id); if (i >= 0) RECS.splice(i, 1); RECS.unshift(clone(row));
+      if (!nube) localStorage.setItem(GK.rec, JSON.stringify(RECS));
+      renderSaved(); calc(); toast(nube ? "✓ Receta guardada en tu cuenta" : "✓ Receta guardada en este teléfono");
+    } catch(e) { N.toast("⚠️ " + e.message, 4000); } finally { b.disabled = false; }
+  };
+  $("#newR").onclick = () => { r = { id: null, nombre: "", items: [{ ing: null, nombre: "", costo: 0 }], margen: Number(S.margen) || 60, porciones: Number(S.porciones) || 12 }; load(); window.scrollTo({top:0, behavior:"smooth"}); $("#rname").focus(); };
+  $("#share").onclick = () => {
+    const n = K.numeros(r, ING, S.redondeo);
+    let msg = `🎂 *${r.nombre || "Mi torta"}* — precio calculado\n\n`;
+    r.items.filter(i => i.nombre || i.costo || i.ing).forEach(i => { msg += `• ${i.nombre || "Ingrediente"}${i.ing ? " (" + i.cant + " " + ((ING.find(g => g.id === i.ing) || {}).unidad || "") + ")" : ""}: ${money(K.costoItem(i, ING))}\n`; });
+    msg += `\n🧾 Costo total: ${money(n.cost)}\n📈 Margen: ${r.margen}%\n🍰 Porciones: ${r.porciones}\n\n`;
+    msg += `💰 *Precio por porción: ${money(n.per)}*\n🎂 Precio de la torta: *${money(n.total)}*\n✨ Ganancia: ${money(n.profit)}\n\n_Calculado con ${S.negocio || "mi calculadora"}_`;
+    window.open(`https://wa.me/${N.waNum(S.whatsapp)}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  load(); renderSaved();
+  // Si cambiaste precios en el panel (otra pestaña), se recalcula al volver
+  document.addEventListener("visibilitychange", async () => { if (!document.hidden && nube) { try { await cargar(); renderLib(); renderIngs(); calc(); renderSaved(); } catch(e) {} } });
+})();
+</script>
+
+<script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script>
+</body>
+</html>
