@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es-VE">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menú QR</title>
+<meta name="description" content="Menú digital con código QR: escanea y pide desde tu mesa.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0906">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script src="nucleo.js"></script>
+<style>
+:root{--bg:#0b0906;--card:#15110b;--line:rgba(212,175,55,.28);--line2:rgba(212,175,55,.55);--gold:#d4af37;--gold2:#f3d97a;--goldg:linear-gradient(135deg,#f7e48c 0%,#d4af37 48%,#a9851f 100%);--txt:#f5edd9;--mut:#a99d82}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{color:var(--txt);font-family:'Poppins',system-ui,sans-serif;font-size:15px;line-height:1.45;max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:110px;
+  background:radial-gradient(120% 50% at 50% 0%,rgba(212,175,55,.10),transparent 60%),var(--bg)}
+.serif{font-family:'Playfair Display',Georgia,serif}
+.gold{background:var(--goldg);-webkit-background-clip:text;background-clip:text;color:transparent}
+button{font-family:inherit;cursor:pointer}
+img{display:block}
+.hero{position:relative;height:210px;overflow:hidden;border-radius:0 0 26px 26px}
+.hero img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(1.05)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,9,6,.2) 0%,rgba(11,9,6,.25) 40%,var(--bg) 100%)}
+.hero-in{position:absolute;inset:auto 18px 16px 18px;z-index:2}
+.top{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.3px}
+.pill.dark{background:rgba(11,9,6,.65);border:1px solid var(--line2);color:var(--gold2);backdrop-filter:blur(6px)}
+.pill.goldp{background:var(--goldg);color:#1b1305}
+.hero h1{font-size:30px;line-height:1.08;font-weight:800}
+.hero p{color:#d9cfb6;font-size:13px;margin-top:4px}
+.qr-card{margin:16px 16px 0;display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(160deg,#1a140b,#100c07)}
+.qr-box{flex:0 0 auto;background:#fff;padding:7px;border-radius:12px;border:2px solid var(--gold);width:96px;height:96px;display:flex;align-items:center;justify-content:center}
+.qr-box img,.qr-box canvas{width:78px!important;height:78px!important}
+.qr-card h2{font-size:18px;line-height:1.2}
+.qr-card p{font-size:12.5px;color:var(--mut);margin-top:4px}
+.qr-card .hrs{margin-top:8px;font-size:11.5px;color:var(--gold2)}
+.tabs{position:sticky;top:0;z-index:20;display:flex;gap:8px;overflow-x:auto;padding:14px 16px 12px;background:linear-gradient(180deg,var(--bg) 80%,rgba(11,9,6,0));scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:#120e09;color:var(--txt);font-size:13.5px;font-weight:500}
+.tab.on{background:var(--goldg);color:#1b1305;border-color:transparent;font-weight:600}
+.sec{padding:4px 16px 0}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin:6px 2px 10px}
+.sec-h h3{font-size:22px}
+.sec-h span{font-size:12px;color:var(--mut)}
+.item{display:flex;gap:12px;padding:10px;border:1px solid var(--line);border-radius:18px;background:var(--card);margin-bottom:10px;align-items:center}
+.item .ph{position:relative;flex:0 0 86px;height:86px;border-radius:14px;overflow:hidden;background:#221a10}
+.item .ph img{width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;top:6px;left:6px;font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:var(--goldg);color:#1b1305}
+.item .info{flex:1;min-width:0}
+.item h4{font-size:15.5px;font-weight:600;line-height:1.25}
+.item .d{font-size:12px;color:var(--mut);margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.price{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold2)}
+.add{width:36px;height:36px;border-radius:50%;border:0;background:var(--goldg);color:#1b1305;font-size:22px;font-weight:600;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(212,175,55,.25)}
+.step{display:flex;align-items:center;gap:8px;background:#0e0b07;border:1px solid var(--line2);border-radius:999px;padding:3px}
+.step button{width:30px;height:30px;border-radius:50%;border:0;background:#241b0f;color:var(--gold2);font-size:18px;font-weight:600;line-height:1}
+.step button.p{background:var(--goldg);color:#1b1305}
+.step b{min-width:16px;text-align:center;font-size:14px}
+.bar{position:fixed;left:50%;transform:translateX(-50%) translateY(140%);bottom:14px;width:calc(100% - 28px);max-width:492px;z-index:40;transition:transform .3s ease}
+.bar.show{transform:translateX(-50%) translateY(0)}
+.bar button{width:100%;border:0;border-radius:999px;background:var(--goldg);color:#1b1305;padding:15px 20px;font-size:15.5px;font-weight:700;display:flex;justify-content:space-between;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 1px rgba(255,235,160,.35) inset}
+.bar .n{background:#1b1305;color:var(--gold2);border-radius:999px;padding:2px 10px;font-size:13px;margin-left:6px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s}
+.ov.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,105%);width:100%;max-width:520px;max-height:88vh;overflow:auto;z-index:60;background:#120e08;border:1px solid var(--line2);border-bottom:0;border-radius:26px 26px 0 0;padding:10px 18px 22px;transition:transform .3s ease}
+.sheet.show{transform:translate(-50%,0)}
+.grab{width:44px;height:4px;border-radius:4px;background:#3a2f1c;margin:4px auto 12px}
+.sheet h2{font-size:24px}
+.sheet .sub{font-size:12.5px;color:var(--mut);margin-bottom:12px}
+.line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed rgba(212,175,55,.18)}
+.line img{width:48px;height:48px;border-radius:12px;object-fit:cover}
+.line .nm{flex:1;min-width:0;font-size:14px;font-weight:500}
+.line .nm small{display:block;color:var(--mut);font-weight:400;font-size:12px}
+.line .lt{font-weight:600;color:var(--gold2);min-width:58px;text-align:right}
+textarea{width:100%;margin-top:14px;background:#0b0906;border:1px solid var(--line);border-radius:14px;color:var(--txt);padding:12px;font:inherit;font-size:13.5px;resize:none}
+textarea:focus{outline:none;border-color:var(--gold)}
+.tot{display:flex;justify-content:space-between;align-items:center;margin:16px 2px}
+.tot span{color:var(--mut)}
+.tot b{font-family:'Playfair Display',serif;font-size:28px}
+.btn{width:100%;border:0;border-radius:999px;background:var(--goldg);color:#1b1305;padding:15px;font-size:15.5px;font-weight:700;display:flex;gap:8px;align-items:center;justify-content:center}
+.btn.ghost{background:transparent;color:var(--gold2);border:1px solid var(--line2);margin-top:10px}
+.btn svg{width:20px;height:20px}
+.empty{text-align:center;color:var(--mut);padding:30px 0}
+.done{position:fixed;inset:0;z-index:80;background:radial-gradient(90% 60% at 50% 20%,rgba(212,175,55,.16),transparent 65%),var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center}
+.done.show{display:flex}
+.check{width:92px;height:92px;border-radius:50%;background:var(--goldg);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px rgba(212,175,55,.12),0 0 0 22px rgba(212,175,55,.06);animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.done h2{font-size:32px;margin-top:28px}
+.done p{color:var(--mut);margin-top:6px;font-size:14px}
+.ticket{margin:22px 0 18px;width:100%;max-width:360px;border:1px solid var(--line2);border-radius:20px;padding:16px 18px;background:#130f09;text-align:left}
+.ticket .num{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold2)}
+.ticket .r{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:#ddd2b8}
+.ticket hr{border:0;border-top:1px dashed rgba(212,175,55,.3);margin:10px 0}
+.foot{text-align:center;color:#6f664f;font-size:11.5px;margin:26px 0 10px}
+.hero .lgo{width:46px;height:46px;border-radius:14px;object-fit:cover;border:1.5px solid var(--gold);margin-bottom:8px;background:#1b150c}
+.closed{margin:12px 16px 0;padding:11px 14px;border-radius:16px;border:1px solid rgba(229,123,110,.5);background:#1d0f0c;color:#f0b3a9;font-size:13px;text-align:center}
+.skel{margin:16px;height:96px;border-radius:18px;background:linear-gradient(90deg,#15110b,#1f180e,#15110b);background-size:200% 100%;animation:sk 1.2s infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.stt{margin-top:12px;font-size:12.5px;color:var(--mut)}
+.foot a{color:#8d8165}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img id="heroImg" alt="">
+  <div class="top">
+    <span class="pill dark" id="mesaBadge">🍽️ Mesa —</span>
+    <span class="pill goldp">Menú digital</span>
+  </div>
+  <div class="hero-in">
+    <img class="lgo" id="bizLogo" alt="" style="display:none">
+    <h1 class="serif" id="bizName"></h1>
+    <p id="bizSub"></p>
+  </div>
+</header>
+
+<section class="qr-card">
+  <div class="qr-box" id="qr" aria-label="Código QR del menú"></div>
+  <div>
+    <h2 class="serif">Escanea y pide <span class="gold">desde tu mesa</span></h2>
+    <p>Elige tus platos, revisa tu pedido y envíalo directo a la cocina por WhatsApp.</p>
+    <div class="hrs" id="hrs"></div>
+  </div>
+</section>
+
+<div id="closed" class="closed" style="display:none">🔒 En este momento estamos cerrados. Puedes ver el menú, pero no recibimos pedidos.</div>
+<nav class="tabs" id="tabs"></nav>
+<main id="menu"><div class="skel"></div><div class="skel"></div><div class="skel"></div></main>
+<p class="foot">Menú digital · Demo</p>
+
+<div class="bar" id="bar"><button id="openCart"><span>Ver pedido <span class="n" id="barN">0</span></span><span id="barT">$0.00</span></button></div>
+
+<div class="ov" id="ov"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <div class="grab"></div>
+  <h2 class="serif" id="sheetTitle">Tu pedido</h2>
+  <p class="sub">Revisa las cantidades antes de enviar</p>
+  <div id="lines"></div>
+  <textarea id="note" rows="2" placeholder="Notas para la cocina (ej: sin cebolla, salsa aparte)"></textarea>
+  <div class="tot"><span>Total</span><b class="gold" id="total">$0.00</b></div>
+  <button class="btn" id="send"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.8s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.6-.1 1.2Z"/></svg>Enviar pedido por WhatsApp</button>
+  <button class="btn ghost" id="closeCart">Seguir pidiendo</button>
+</section>
+
+<section class="done" id="done">
+  <div class="check"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#1b1305" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+  <h2 class="serif">¡Pedido <span class="gold">recibido!</span></h2>
+  <p id="doneTxt">La cocina ya está preparando tu pedido.</p>
+  <div class="ticket" id="ticket"></div>
+  <button class="btn" id="waAgain" style="max-width:360px;margin-bottom:10px">Abrir WhatsApp de nuevo</button>
+  <button class="btn ghost" id="again" style="max-width:360px">Volver al menú</button>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(async function(){
+  const N = Nucleo, $ = N.$, esc = N.esc;
+  N.bannerDemo();
+  const params = new URLSearchParams(location.search);
+  const mesa = (params.get("mesa") || "1").replace(/[^0-9A-Za-z-]/g,"").slice(0,6) || "1";
+  const KEY = "menuqr_cart_" + mesa;
+  let db, S = {}, CATS = [], ITEMS = [];
+  const money = n => N.money(n, S.moneda || "$");
+  let cart = {};
+  try { cart = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e) { cart = {}; }
+  let active = null;
+
+  try { db = await N.listo(); }
+  catch(e) { if (e.code === "NO_CONFIG") return N.pantallaSinConexion("#"); throw e; }
+
+  async function cargar(){
+    const [a, c, p] = await Promise.all([
+      db.select("mqr_ajustes", { eq: { id: 1 } }),
+      db.select("mqr_categorias", { eq: { activo: true }, order: [["orden"], ["nombre"]] }),
+      db.select("mqr_productos", { eq: { disponible: true }, order: [["orden"], ["nombre"]] })
+    ]);
+    S = (a[0] && a[0].datos) || {};
+    CATS = c; ITEMS = p.map(x => ({ ...x, precio: Number(x.precio) }));
+    const ids = new Set(CATS.map(x => x.id));
+    if (ITEMS.some(i => !ids.has(i.categoria_id))) CATS = CATS.concat([{ id: null, nombre: "Otros" }]);
+    CATS = CATS.filter(c => ITEMS.some(i => (ids.has(i.categoria_id) ? i.categoria_id : null) === c.id));
+    ITEMS.forEach(i => { if (!ids.has(i.categoria_id)) i.categoria_id = null; });
+    Object.keys(cart).forEach(id => { if (!ITEMS.some(i => i.id === id)) delete cart[id]; });
+    if (!CATS.some(c => c.id === active)) active = CATS[0] ? CATS[0].id : null;
+  }
+  try { await cargar(); }
+  catch(e) { $("#menu").innerHTML = `<p class="empty">${esc(e.message)}<br><br><button class="btn" style="max-width:220px;margin:auto" onclick="location.reload()">Reintentar</button></p>`; return; }
+
+  // Cabecera
+  function cabecera(){
+    $("#heroImg").src = N.img(S.portada) || "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+    if (S.logo) { $("#bizLogo").src = N.img(S.logo); $("#bizLogo").style.display = ""; } else $("#bizLogo").style.display = "none";
+    $("#bizName").textContent = S.nombre || "Nuestro menú";
+    $("#bizSub").textContent = [S.lema, S.ciudad].filter(Boolean).join(" · ");
+    $("#hrs").textContent = S.horario ? "🕒 " + S.horario : "";
+    $("#mesaBadge").textContent = "🍽️ Mesa " + mesa;
+    $("#sheetTitle").textContent = "Tu pedido · Mesa " + mesa;
+    $("#closed").style.display = S.abierto === false ? "" : "none";
+    document.title = "Menú QR · " + (S.nombre || "");
+  }
+  cabecera();
+
+  // QR con la dirección de esta página (incluye la mesa)
+  try {
+    if (window.QRCode) new QRCode($("#qr"), { text: location.href, width: 160, height: 160, colorDark: "#0b0906", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+  } catch(e) { $("#qr").style.display = "none"; }
+
+  // Pestañas
+  const tabs = $("#tabs");
+  const secId = id => "sec-" + (id || "otros");
+  function buildTabs(){
+    tabs.innerHTML = "";
+    CATS.forEach(c => {
+      const b = document.createElement("button");
+      b.className = "tab"; b.textContent = c.nombre; b.dataset.id = c.id || "";
+      b.onclick = () => { active = c.id; renderTabs(); const s = document.getElementById(secId(c.id)); s && s.scrollIntoView({behavior:"smooth", block:"start"}); };
+      tabs.appendChild(b);
+    });
+  }
+  function renderTabs(){ tabs.querySelectorAll(".tab").forEach(t => t.classList.toggle("on", (t.dataset.id || null) === active)); }
+
+  // Menú
+  function renderMenu(){
+    const m = $("#menu"); m.innerHTML = "";
+    if (!ITEMS.length) { m.innerHTML = `<p class="empty">El menú se está preparando. Vuelve pronto 🙌</p>`; return; }
+    CATS.forEach(c => {
+      const items = ITEMS.filter(i => i.categoria_id === c.id);
+      const s = document.createElement("section"); s.className = "sec"; s.id = secId(c.id);
+      s.style.scrollMarginTop = "64px";
+      s.innerHTML = `<div class="sec-h"><h3 class="serif">${esc(c.nombre)}</h3><span>${items.length} opciones</span></div>`;
+      items.forEach(i => {
+        const q = cart[i.id] || 0;
+        const el = document.createElement("article"); el.className = "item";
+        el.innerHTML = `<div class="ph">${i.foto ? `<img loading="lazy" src="${esc(N.img(i.foto))}" alt="${esc(i.nombre)}">` : ""}${i.etiqueta ? `<span class="tag">${esc(i.etiqueta)}</span>` : ""}</div>
+          <div class="info"><h4>${esc(i.nombre)}</h4><div class="d">${esc(i.descripcion || "")}</div>
+          <div class="row"><span class="price">${money(i.precio)}</span>${q ? `<div class="step"><button data-m="${i.id}" aria-label="Quitar">−</button><b>${q}</b><button class="p" data-p="${i.id}" aria-label="Agregar">+</button></div>` : `<button class="add" data-p="${i.id}" aria-label="Agregar ${esc(i.nombre)}">+</button>`}</div></div>`;
+        s.appendChild(el);
+      });
+      m.appendChild(s);
+    });
+    if (window.__io) { window.__io.disconnect(); m.querySelectorAll(".sec").forEach(x => window.__io.observe(x)); }
+  }
+  document.addEventListener("click", e => {
+    const p = e.target.closest("[data-p]"), mi = e.target.closest("[data-m]");
+    if (p) change(p.dataset.p, 1); else if (mi) change(mi.dataset.m, -1);
+  });
+  function change(id, d){
+    cart[id] = Math.max(0, (cart[id] || 0) + d);
+    if (!cart[id]) delete cart[id];
+    localStorage.setItem(KEY, JSON.stringify(cart));
+    renderMenu(); renderBar(); if ($("#sheet").classList.contains("show")) renderSheet();
+  }
+  const lines = () => Object.keys(cart).map(id => ({ item: ITEMS.find(i => i.id === id), q: cart[id] })).filter(l => l.item);
+  const count = () => lines().reduce((a,l) => a + l.q, 0);
+  const total = () => lines().reduce((a,l) => a + l.q * l.item.precio, 0);
+
+  function renderBar(){
+    $("#barN").textContent = count(); $("#barT").textContent = money(total());
+    $("#bar").classList.toggle("show", count() > 0);
+  }
+  function renderSheet(){
+    const L = lines(), box = $("#lines");
+    box.innerHTML = L.length ? "" : `<p class="empty">Tu pedido está vacío.</p>`;
+    L.forEach(l => {
+      const d = document.createElement("div"); d.className = "line";
+      d.innerHTML = `${l.item.foto ? `<img src="${esc(N.img(l.item.foto))}" alt="">` : ""}<div class="nm">${esc(l.item.nombre)}<small>${money(l.item.precio)} c/u</small></div>
+        <div class="step"><button data-m="${l.item.id}">−</button><b>${l.q}</b><button class="p" data-p="${l.item.id}">+</button></div>
+        <div class="lt">${money(l.q * l.item.precio)}</div>`;
+      box.appendChild(d);
+    });
+    $("#total").textContent = money(total());
+    const cerrado = S.abierto === false, ok = L.length && !cerrado;
+    $("#send").disabled = !ok; $("#send").style.opacity = ok ? 1 : .5;
+    $("#send").lastChild.textContent = cerrado ? "Estamos cerrados" : "Enviar pedido por WhatsApp";
+  }
+  function openSheet(){ renderSheet(); $("#ov").classList.add("show"); $("#sheet").classList.add("show"); }
+  function closeSheet(){ $("#ov").classList.remove("show"); $("#sheet").classList.remove("show"); }
+  $("#openCart").onclick = openSheet; $("#closeCart").onclick = closeSheet; $("#ov").onclick = closeSheet;
+
+  let lastWa = "";
+  $("#send").onclick = async () => {
+    const L = lines(); if (!L.length || S.abierto === false) return;
+    const num = N.codigo(S.prefijo || "P"), note = $("#note").value.trim().slice(0, 400);
+    const hora = new Date().toLocaleTimeString("es-VE", { hour: "numeric", minute: "2-digit" });
+    let msg = `🫓 *Nuevo pedido · ${S.nombre || ""}*\n`;
+    msg += `🧾 Pedido: *${num}*\n🍽️ Mesa: *${mesa}*\n🕒 Hora: ${hora}\n\n`;
+    L.forEach(l => { msg += `• ${l.q} x ${l.item.nombre} — ${money(l.q * l.item.precio)}\n`; });
+    msg += `\n💰 *Total: ${money(total())}*`;
+    if (note) msg += `\n📝 Notas: ${note}`;
+    msg += `\n\n_Enviado desde el menú QR_`;
+    lastWa = `https://wa.me/${N.waNum(S.whatsapp)}?text=${encodeURIComponent(msg)}`;
+    // Se abre WhatsApp en el mismo toque (los teléfonos bloquean ventanas abiertas después) y se guarda el pedido en la base de datos.
+    if (N.waNum(S.whatsapp)) window.open(lastWa, "_blank");
+    const btn = $("#send"); btn.disabled = true;
+    const tot = total();
+    $("#ticket").innerHTML = `<div class="r"><span>Pedido</span><span>Mesa ${esc(mesa)}</span></div><div class="num">#${esc(num)}</div><hr>` +
+      L.map(l => `<div class="r"><span>${l.q} × ${esc(l.item.nombre)}</span><span>${money(l.q * l.item.precio)}</span></div>`).join("") +
+      `<hr><div class="r" style="font-weight:600;color:#f3d97a"><span>Total</span><span>${money(tot)}</span></div><div class="stt" id="stt">⏳ Registrando pedido…</div>`;
+    try {
+      await db.insert("mqr_pedidos", { id: N.uid(), codigo: num, mesa, items: L.map(l => ({ id: l.item.id, nombre: l.item.nombre, precio: l.item.precio, cant: l.q })), total: tot, nota: note, estado: "nuevo" });
+      cart = {}; localStorage.setItem(KEY, "{}"); $("#note").value = "";
+      closeSheet(); renderMenu(); renderBar();
+      $("#done").classList.add("show");
+      $("#stt").textContent = "✓ Pedido registrado en la cocina";
+    } catch(e) {
+      N.toast("⚠️ " + e.message, 5000);
+    } finally { btn.disabled = false; }
+  };
+  $("#waAgain").onclick = () => { if (lastWa) window.open(lastWa, "_blank"); };
+  $("#again").onclick = () => { $("#done").classList.remove("show"); window.scrollTo({top:0}); };
+
+  // Resalta la pestaña según la sección visible
+  const io = new IntersectionObserver(es => { es.forEach(en => { if (en.isIntersecting) { const id = en.target.id.replace("sec-",""); const c = CATS.find(x => (x.id || "otros") === id); active = c ? c.id : null; renderTabs(); } }); }, { rootMargin: "-40% 0px -55% 0px" });
+  window.__io = io;
+  buildTabs(); renderTabs(); renderMenu(); renderBar();
+
+  // Cambios del dueño (precios, disponibilidad, abierto/cerrado) se reflejan solos
+  let tRe;
+  const recargar = () => { clearTimeout(tRe); tRe = setTimeout(async () => { try { await cargar(); cabecera(); buildTabs(); renderTabs(); renderMenu(); renderBar(); } catch(e) {} }, 400); };
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) recargar(); });
+  if (db.modo === "demo") ["mqr_productos","mqr_categorias","mqr_ajustes"].forEach(t => db.subscribe(t, recargar));
+})();
+</script>
+
+<script>if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));</script>
+</body>
+</html>
